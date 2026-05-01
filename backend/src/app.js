@@ -1,4 +1,5 @@
 import express from 'express';
+import { router as authRoute } from './routes/auth.route.js';
 
 export const app = express();
 
@@ -11,6 +12,4 @@ app.get('/', (req, res) => {
   res.send('Hello, World!');
 });
 
-app.get('/api/test', (req, res) => {
-  res.json({ message: 'Backend is working!' });
-});
+app.use('/api/auth', authRoute);
