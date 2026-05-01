@@ -10,3 +10,7 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/', (req, res) => {
   res.send('Hello, World!');
 });
+
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'Backend is working!' });
+});
