@@ -2,9 +2,9 @@ import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema(
   {
-    name: {
+    fullName: {
       type: String,
-      required: [true, 'Please provide name'],
+      required: [true, 'Please provide fullName'],
     },
     email: {
       type: String,
@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema(
       minlength: [6, 'Password must be at least 6 characters'],
       select: false,
     },
-    profilepic: {
+    profilePic: {
       type: String,
       default: '',
     },

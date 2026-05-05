@@ -1,14 +1,15 @@
 import { userModel } from '../models/user.model.js';
 import bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { sendEmail } from '../utils/email.js';
 
 export const registerUserController = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { fullName, email, password } = req.body;
 
-    if (!name || !email || !password) {
+    if (!fullName || !email || !password) {
       return res.status(400).json({
-        message: 'please enter name, email and password',
+        message: 'please enter fullName, email and password',
       });
     }
 
@@ -23,16 +24,29 @@ export const registerUserController = async (req, res) => {
     const hashedPassword = await bcryptjs.hash(password, 10);
 
     const user = await userModel.create({
-      name,
+      fullName,
       email,
       password: hashedPassword,
     });
 
+    setImmediate(async () => {
+      try {
+        await sendEmail(email, 'Welcome to chatSphere', fullName);
+      } catch (error) {
+        console.error('Error sending welcome email: ', error);
+      }
+    });
+
     return res.status(201).json({
       message: 'user created successfully',
+      user: {
+        id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+      },
     });
   } catch (error) {
-    console.error(error);
+    console.error('Error in registercontroller: ', error);
     return res.status(500).json({
       message: 'internal server error',
     });
@@ -70,6 +84,7 @@ export const loginUserController = async (req, res) => {
     });
 
     res.cookie('token', token, {
+      maxAge: 7 * 24 * 60 * 60 * 1000, //7d
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
@@ -79,15 +94,22 @@ export const loginUserController = async (req, res) => {
       message: 'login successful',
       user: {
         id: user._id,
-        name: user.name,
+        fullName: user.fullName,
         email: user.email,
       },
       token,
     });
   } catch (error) {
-    console.error(error);
+    console.error('Error in login controller: ', error);
     return res.status(500).json({
       message: 'internal server error',
     });
   }
+};
+
+export const logoutUserController = (req, res) => {
+  req.cookie('token', '', { maxAge: 0 });
+  res.status(200).json({
+    message: 'Logged out successfully',
+  });
 };
