@@ -1,6 +1,7 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import { router as authRoute } from './routes/auth.route.js';
+import { router as userRoute } from './routes/user.route.js';
 
 export const app = express();
 
@@ -14,6 +15,5 @@ app.get('/', (req, res) => {
   res.send('Hello, World!');
 });
 
-
-
 app.use('/api/auth', authRoute);
+app.use('/api/user', userRoute);
