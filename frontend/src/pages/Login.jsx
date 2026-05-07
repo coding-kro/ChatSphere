@@ -1,29 +1,72 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-
-import { BiSolidHide } from 'react-icons/bi';
-import { BiSolidShow } from 'react-icons/bi';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { BiSolidHide, BiSolidShow } from 'react-icons/bi';
+import axios from 'axios';
+import { showToast } from '../utils/showToast.js';
 
 const Login = () => {
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
   const [loading, setLoading] = useState(false);
+
   const [showPassword, setShowPassword] = useState(false);
+
+  const [passwordError, setPasswordError] = useState('');
+
+  const apiUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 
   const handleLogin = async (e) => {
     e.preventDefault();
+
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+
+    setPasswordError('');
+
+    // Email Validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(trimmedEmail)) {
+      showToast('error', 'Please enter a valid email address');
+      return;
+    }
+
+    // Password Validation
+    if (trimmedPassword.length < 6) {
+      setPasswordError('Password must be at least 6 characters long');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 6000));
+      await axios.post(
+        `${apiUrl}/api/auth/login`,
+        {
+          email: trimmedEmail,
+          password: trimmedPassword,
+        },
+        {
+          withCredentials: true,
+        },
+      );
 
-      console.log('Logged in with: ', email, password);
-      alert('Login successful!');
+      showToast('success', 'Login successful!');
+
+      // Reset Form
       setEmail('');
       setPassword('');
       setShowPassword(false);
+
+      navigate('/');
     } catch (error) {
-      console.error(error);
+      const message =
+        error.response?.data?.message || 'Invalid email or password';
+
+      showToast('error', message);
     } finally {
       setLoading(false);
     }
@@ -36,7 +79,13 @@ const Login = () => {
           Welcome Back
         </h2>
 
-        <form className="space-y-4" onSubmit={handleLogin}>
+        <form
+          onSubmit={handleLogin}
+          className={`space-y-4 ${
+            loading ? 'opacity-70 pointer-events-none' : ''
+          }`}
+        >
+          {/* Email */}
           <div>
             <label
               htmlFor="email"
@@ -44,6 +93,7 @@ const Login = () => {
             >
               Email Address
             </label>
+
             <input
               type="email"
               id="email"
@@ -57,6 +107,7 @@ const Login = () => {
             />
           </div>
 
+          {/* Password */}
           <div>
             <label
               htmlFor="password"
@@ -74,10 +125,16 @@ const Login = () => {
                 autoComplete="current-password"
                 disabled={loading}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setPasswordError('');
+                }}
+                aria-invalid={!!passwordError}
+                aria-describedby="password-error"
                 className="w-full px-4 py-2 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
               />
 
+              {/* Show / Hide Password */}
               <button
                 type="button"
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
@@ -85,11 +142,18 @@ const Login = () => {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-lg text-gray-600 hover:text-blue-600"
               >
-                <span>{showPassword ? <BiSolidHide /> : <BiSolidShow />}</span>
+                {showPassword ? <BiSolidHide /> : <BiSolidShow />}
               </button>
             </div>
+
+            {passwordError && (
+              <p id="password-error" className="text-red-500 text-sm mt-1">
+                {passwordError}
+              </p>
+            )}
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
@@ -110,9 +174,10 @@ const Login = () => {
           </button>
         </form>
 
+        {/* Signup Redirect */}
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
-            Don't have an account?
+            Don&apos;t have an account?{' '}
             <Link
               to="/signup"
               className="text-blue-600 hover:underline font-medium"

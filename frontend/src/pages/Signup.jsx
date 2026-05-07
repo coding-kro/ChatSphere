@@ -1,45 +1,88 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { BiSolidHide, BiSolidShow } from 'react-icons/bi';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { showToast } from '../utils/showToast.js';
 
 const Signup = () => {
+  const navigate = useNavigate();
+
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+
   const [loading, setLoading] = useState(false);
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const [passwordError, setPasswordError] = useState('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState('');
+
+  const apiUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 
   const handleSignup = async (e) => {
     e.preventDefault();
 
-    if (password !== confirmPassword) {
-      alert('Passwords do not match!');
+    const trimmedFullName = fullName.trim();
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+    const trimmedConfirmPassword = confirmPassword.trim();
+
+    setPasswordError('');
+    setConfirmPasswordError('');
+
+    // Email Validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(trimmedEmail)) {
+      showToast('error', 'Please enter a valid email address');
+      return;
+    }
+
+    // Password Validation
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{6,}$/;
+
+    if (!passwordRegex.test(trimmedPassword)) {
+      setPasswordError(
+        'Password must contain at least 6 characters, including letters and numbers',
+      );
+      return;
+    }
+
+    // Confirm Password Validation
+    if (trimmedPassword !== trimmedConfirmPassword) {
+      setConfirmPasswordError('Passwords do not match');
       return;
     }
 
     setLoading(true);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 6000));
+      await axios.post(`${apiUrl}/api/auth/register`, {
+        fullName: trimmedFullName,
+        email: trimmedEmail,
+        password: trimmedPassword,
+      });
 
-      console.log(
-        'Signed up with: ',
-        fullName,
-        email,
-        password,
-        confirmPassword,
-      );
-      alert('Signup successful!');
+      showToast('success', 'Signup successful!');
+
+      // Reset Form
       setFullName('');
       setEmail('');
       setPassword('');
       setConfirmPassword('');
+
       setShowPassword(false);
       setShowConfirmPassword(false);
+
+      navigate('/login');
     } catch (error) {
-      console.error(error);
+      const message =
+        error.response?.data?.message || 'Signup failed. Try again.';
+
+      showToast('error', message);
     } finally {
       setLoading(false);
     }
@@ -52,7 +95,13 @@ const Signup = () => {
           Create an Account
         </h2>
 
-        <form className="space-y-4" onSubmit={handleSignup}>
+        <form
+          onSubmit={handleSignup}
+          className={`space-y-4 ${
+            loading ? 'opacity-70 pointer-events-none' : ''
+          }`}
+        >
+          {/* Full Name */}
           <div>
             <label
               htmlFor="fullName"
@@ -60,10 +109,11 @@ const Signup = () => {
             >
               Full Name
             </label>
+
             <input
               type="text"
               id="fullName"
-              placeholder="Jhon Doe"
+              placeholder="John Doe"
               required
               autoComplete="name"
               disabled={loading}
@@ -73,6 +123,7 @@ const Signup = () => {
             />
           </div>
 
+          {/* Email */}
           <div>
             <label
               htmlFor="email"
@@ -80,6 +131,7 @@ const Signup = () => {
             >
               Email Address
             </label>
+
             <input
               type="email"
               id="email"
@@ -93,6 +145,7 @@ const Signup = () => {
             />
           </div>
 
+          {/* Password */}
           <div>
             <label
               htmlFor="password"
@@ -100,6 +153,7 @@ const Signup = () => {
             >
               Password
             </label>
+
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
@@ -109,7 +163,12 @@ const Signup = () => {
                 autoComplete="new-password"
                 disabled={loading}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setPasswordError('');
+                }}
+                aria-invalid={!!passwordError}
+                aria-describedby="password-error"
                 className="w-full px-4 py-2 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
               />
 
@@ -120,11 +179,18 @@ const Signup = () => {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-lg text-gray-600 hover:text-blue-600"
               >
-                <span>{showPassword ? <BiSolidHide /> : <BiSolidShow />}</span>
+                {showPassword ? <BiSolidHide /> : <BiSolidShow />}
               </button>
             </div>
+
+            {passwordError && (
+              <p id="password-error" className="text-red-500 text-sm mt-1">
+                {passwordError}
+              </p>
+            )}
           </div>
 
+          {/* Confirm Password */}
           <div>
             <label
               htmlFor="confirmPassword"
@@ -132,6 +198,7 @@ const Signup = () => {
             >
               Confirm Password
             </label>
+
             <div className="relative">
               <input
                 type={showConfirmPassword ? 'text' : 'password'}
@@ -141,7 +208,12 @@ const Signup = () => {
                 autoComplete="new-password"
                 disabled={loading}
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  setConfirmPasswordError('');
+                }}
+                aria-invalid={!!confirmPasswordError}
+                aria-describedby="confirm-password-error"
                 className="w-full px-4 py-2 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
               />
 
@@ -154,13 +226,21 @@ const Signup = () => {
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-lg text-gray-600 hover:text-blue-600"
               >
-                <span>
-                  {showConfirmPassword ? <BiSolidHide /> : <BiSolidShow />}
-                </span>
+                {showConfirmPassword ? <BiSolidHide /> : <BiSolidShow />}
               </button>
             </div>
+
+            {confirmPasswordError && (
+              <p
+                id="confirm-password-error"
+                className="text-red-500 text-sm mt-1"
+              >
+                {confirmPasswordError}
+              </p>
+            )}
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
@@ -181,9 +261,10 @@ const Signup = () => {
           </button>
         </form>
 
+        {/* Login Redirect */}
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
-            Already have an account?
+            Already have an account?{' '}
             <Link
               to="/login"
               className="text-blue-600 hover:underline font-medium"

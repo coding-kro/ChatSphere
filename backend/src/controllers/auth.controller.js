@@ -18,6 +18,7 @@ export const registerUserController = async (req, res) => {
     if (isuserExist) {
       return res.status(400).json({
         message: 'user already exist',
+       
       });
     }
 
