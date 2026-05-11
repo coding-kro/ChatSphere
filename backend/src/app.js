@@ -2,6 +2,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import { router as authRoute } from './routes/auth.route.js';
 import { router as userRoute } from './routes/user.route.js';
+import { router as messageRoute } from './routes/message.route.js';
 import cors from 'cors';
 
 export const app = express();
@@ -24,3 +25,4 @@ app.get('/', (req, res) => {
 
 app.use('/api/auth', authRoute);
 app.use('/api/user', userRoute);
+app.use('/api/message', messageRoute);
