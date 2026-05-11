@@ -1,14 +1,21 @@
 import { useState } from 'react';
+
 import Chatlist from '../components/Chatlist';
+import Userlist from '../components/Userlist';
 import Searchbar from '../components/Searchbar';
 import Profile from '../components/Profile';
 import Chatheader from '../components/Chatheader';
 import Messagearea from '../components/Messagearea';
 import Inputmsg from '../components/Inputmsg';
 import Selectbutton from '../components/Selectbutton';
+import Blankmsg from '../components/Blankmsg';
 
 const Layout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [activeTab, setActiveTab] = useState('chats');
+
+  // NEW STATE
+  const [selectedUser, setSelectedUser] = useState(null);
 
   const toggleView = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -36,21 +43,50 @@ const Layout = () => {
         `}
       >
         <Profile />
+
         <Searchbar />
-        <Selectbutton />
-        <Chatlist />
+
+        {/* Tabs */}
+        <Selectbutton activeTab={activeTab} setActiveTab={setActiveTab} />
+
+        {/* Chat List / User List */}
+        {activeTab === 'chats' && (
+          <Chatlist
+            setSelectedUser={setSelectedUser}
+            setIsSidebarOpen={setIsSidebarOpen}
+          />
+        )}
+
+        {activeTab === 'contacts' && (
+          <Userlist
+            setSelectedUser={setSelectedUser}
+            setIsSidebarOpen={setIsSidebarOpen}
+          />
+        )}
       </aside>
 
       {/* Chat Area */}
       <section
         className={`
-          flex-1 flex flex-col z-10
-          ${!isSidebarOpen ? 'flex' : 'hidden md:flex'}
-        `}
+    flex-1 flex flex-col z-10
+    ${isSidebarOpen && !selectedUser ? 'hidden md:flex' : 'flex'}
+  `}
       >
-        <Chatheader toggleView={toggleView} />
-        <Messagearea />
-        <Inputmsg />
+        {selectedUser ? (
+          <>
+            <Chatheader
+              toggleView={toggleView}
+              user={selectedUser}
+              setSelectedUser={setSelectedUser}
+            />
+
+            <Messagearea user={selectedUser} />
+
+            <Inputmsg user={selectedUser} />
+          </>
+        ) : (
+          <Blankmsg />
+        )}
       </section>
     </main>
   );

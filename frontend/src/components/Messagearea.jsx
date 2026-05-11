@@ -2,12 +2,52 @@ const messages = [
   {
     id: 1,
     type: 'receiver',
-    text: 'Is the dashboard responsive yet? 📱',
+    text: 'Check this design mockup 📱',
+    time: '10:15 AM',
   },
   {
     id: 2,
     type: 'sender',
-    text: 'Yes! Check it out on your phone. It switches smoothly between the list and the chat! 🚀',
+    text: 'Looks clean! 🔥',
+    time: '10:16 AM',
+  },
+  {
+    id: 3,
+    type: 'receiver',
+    image: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg',
+    time: '10:17 AM',
+  },
+  {
+    id: 4,
+    type: 'sender',
+    text: 'Nice UI flow 👍',
+    time: '10:18 AM',
+  },
+  {
+    id: 5,
+    type: 'receiver',
+    text: 'Mobile version screenshot:',
+    image: 'https://images.pexels.com/photos/5082579/pexels-photo-5082579.jpeg',
+    time: '10:19 AM',
+  },
+  {
+    id: 6,
+    type: 'sender',
+    text: 'Responsive looks perfect 🚀',
+    time: '10:20 AM',
+  },
+  {
+    id: 7,
+    type: 'receiver',
+    text: 'Also check this UI inspiration:',
+    image: 'https://images.pexels.com/photos/196644/pexels-photo-196644.jpeg',
+    time: '10:21 AM',
+  },
+  {
+    id: 8,
+    type: 'sender',
+    text: 'Great reference 💡',
+    time: '10:22 AM',
   },
 ];
 
@@ -36,7 +76,23 @@ const Messagearea = () => {
               }
             `}
           >
-            <p>{message.text}</p>
+            {/* Text (only if exists) */}
+            {message.text && <p>{message.text}</p>}
+
+            {/* Image (only if exists) */}
+            {message.image && (
+              <img
+                src={message.image}
+                alt="chat media"
+                loading="lazy"
+                className="mt-2 max-w-55 max-h-55 lg:max-w-65 lg:max-h-65 object-cover rounded-lg cursor-pointer hover:scale-105 transition-transform"
+              />
+            )}
+
+            {/* Time */}
+            <span className="text-[10px] text-slate-400 block mt-1 text-right">
+              {message.time}
+            </span>
           </div>
         </div>
       ))}

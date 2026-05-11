@@ -1,11 +1,7 @@
-import { useState } from 'react';
-
-const Selectbutton = () => {
-  const [active, setActive] = useState('chats');
-
+const Selectbutton = ({ activeTab, setActiveTab }) => {
   const getButtonClass = (tab) =>
     `px-8 py-2 rounded-lg text-sm transition-all ${
-      active === tab
+      activeTab === tab
         ? 'bg-cyan-500 text-white'
         : 'text-slate-400 hover:text-white'
     }`;
@@ -13,17 +9,17 @@ const Selectbutton = () => {
   return (
     <div className="flex justify-around p-2 bg-white/5 rounded-xl border border-white/10 m-5">
       <button
-        onClick={() => setActive('chats')}
+        onClick={() => setActiveTab('chats')}
         className={getButtonClass('chats')}
-        aria-pressed={active === 'chats'}
+        aria-pressed={activeTab === 'chats'}
       >
         Chats
       </button>
 
       <button
-        onClick={() => setActive('contacts')}
+        onClick={() => setActiveTab('contacts')}
         className={getButtonClass('contacts')}
-        aria-pressed={active === 'contacts'}
+        aria-pressed={activeTab === 'contacts'}
       >
         Contacts
       </button>
