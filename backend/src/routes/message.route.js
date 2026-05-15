@@ -1,7 +1,15 @@
 import { Router } from 'express';
-import { sendMessageController } from '../controllers/message.controller.js';
+import {
+  sendMessageController,
+  getMessagesController,
+} from '../controllers/message.controller.js';
+
 import { authMiddleware } from '../middleware/auth.middleware.js';
 
 export const router = Router();
 
-router.post('/send', authMiddleware, sendMessageController);
+// Send message
+router.post('/send/:receiverId', authMiddleware, sendMessageController);
+
+// Get conversation messages
+router.get('/:selectedUserId', authMiddleware, getMessagesController);

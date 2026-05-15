@@ -14,8 +14,12 @@ const Layout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState('chats');
 
-  // NEW STATE
+  // Selected chat user
   const [selectedUser, setSelectedUser] = useState(null);
+
+  // Logged in user ID
+  // Replace this with your auth/context user
+  const currentUserId = '69fbf16fb095acb365a6e05c';
 
   const toggleView = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -34,8 +38,8 @@ const Layout = () => {
           ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
           fixed inset-y-0 left-0 z-50 w-full
           bg-slate-950
-          md:relative md:translate-x-0 md:w-[320px] lg:w-[380px]
-          md:bg-white/[0.03]
+          md:relative md:translate-x-0 md:w-[320px] lg:w-95
+          md:bg-white/3
           backdrop-blur-2xl
           border-r border-white/10
           flex flex-col
@@ -49,7 +53,7 @@ const Layout = () => {
         {/* Tabs */}
         <Selectbutton activeTab={activeTab} setActiveTab={setActiveTab} />
 
-        {/* Chat List / User List */}
+        {/* Chat List */}
         {activeTab === 'chats' && (
           <Chatlist
             setSelectedUser={setSelectedUser}
@@ -57,6 +61,7 @@ const Layout = () => {
           />
         )}
 
+        {/* User List */}
         {activeTab === 'contacts' && (
           <Userlist
             setSelectedUser={setSelectedUser}
@@ -68,9 +73,9 @@ const Layout = () => {
       {/* Chat Area */}
       <section
         className={`
-    flex-1 flex flex-col z-10
-    ${isSidebarOpen && !selectedUser ? 'hidden md:flex' : 'flex'}
-  `}
+          flex-1 flex flex-col z-10
+          ${isSidebarOpen && !selectedUser ? 'hidden md:flex' : 'flex'}
+        `}
       >
         {selectedUser ? (
           <>
@@ -80,9 +85,14 @@ const Layout = () => {
               setSelectedUser={setSelectedUser}
             />
 
-            <Messagearea user={selectedUser} />
+            {/* FIXED */}
+            <Messagearea
+              selectedUser={selectedUser}
+              currentUserId={currentUserId}
+            />
 
-            <Inputmsg user={selectedUser} />
+            {/* FIXED */}
+            <Inputmsg selectedUser={selectedUser} />
           </>
         ) : (
           <Blankmsg />

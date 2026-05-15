@@ -3,7 +3,6 @@ import Signup from './pages/Signup';
 import Login from './pages/Login';
 import { ToastContainer } from 'react-toastify';
 import Layout from './layout/Layout';
-import Userlist from './components/Userlist';
 import Blankmsg from './components/Blankmsg';
 
 const App = () => {

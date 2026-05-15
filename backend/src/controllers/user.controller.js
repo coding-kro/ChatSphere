@@ -32,3 +32,21 @@ export const getMeController = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+export const getAllUsersController = async (req, res) => {
+  try {
+    const users = await userModel.find();
+
+    res.status(200).json({
+      success: true,
+      message: 'Users retrieved successfully',
+      users,
+    });
+  } catch (error) {
+    console.error('Error in getAllUsersController:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+    });
+  }
+};
