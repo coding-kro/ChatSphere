@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Navigate } from 'react-router-dom';
 
 import Chatlist from '../components/Chatlist';
 import Userlist from '../components/Userlist';
@@ -23,7 +24,7 @@ const Layout = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  // ⛔ Prevent rendering until auth is ready
+  // Loading state
   if (loading) {
     return (
       <div className="h-screen flex items-center justify-center bg-slate-950 text-white">
@@ -32,10 +33,13 @@ const Layout = () => {
     );
   }
 
+  // Redirect if user not logged in
+  if (!user) {
+    return <Navigate to="/login" />;
+  }
 
-  // ✅ real logged-in user ID
+  // Logged in user ID
   const currentUserId = user?.user?._id;
-
 
   return (
     <main className="h-screen bg-slate-950 text-white flex overflow-hidden relative">

@@ -4,8 +4,13 @@ import { BiSolidHide, BiSolidShow } from 'react-icons/bi';
 import axios from 'axios';
 import { showToast } from '../utils/showToast.js';
 
+import { useAuth } from '../context/AuthContext';
+
 const Login = () => {
   const navigate = useNavigate();
+
+  // IMPORTANT
+  const { setUser } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -43,7 +48,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      await axios.post(
+      const res = await axios.post(
         `${apiUrl}/api/auth/login`,
         {
           email: trimmedEmail,
@@ -53,6 +58,9 @@ const Login = () => {
           withCredentials: true,
         },
       );
+
+      // IMPORTANT
+      setUser(res.data);
 
       showToast('success', 'Login successful!');
 
@@ -134,7 +142,6 @@ const Login = () => {
                 className="w-full px-4 py-2 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
               />
 
-              {/* Show / Hide Password */}
               <button
                 type="button"
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
@@ -174,7 +181,6 @@ const Login = () => {
           </button>
         </form>
 
-        {/* Signup Redirect */}
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
             Don&apos;t have an account?{' '}

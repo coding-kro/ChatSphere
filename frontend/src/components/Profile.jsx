@@ -1,9 +1,19 @@
 import { IoLogOut } from 'react-icons/io5';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Profile = () => {
   const { user } = useAuth();
   const User = user.user;
+  const navigate = useNavigate();
+
+  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
+  const logoutUser = async () => {
+    await axios.get(`${apiUrl}/api/auth/logout`, { withCredentials: true });
+    navigate('/login');
+  };
 
   return (
     <div className="p-4 lg:p-6">
@@ -37,6 +47,7 @@ const Profile = () => {
         <button
           aria-label="Logout"
           className="p-2 rounded-xl bg-white/5 hover:bg-red-500/20 text-red-400 transition-all"
+          onClick={logoutUser}
         >
           <IoLogOut size={20} />
         </button>

@@ -32,9 +32,9 @@ const Messagearea = ({ selectedUser, currentUserId }) => {
   }, [selectedUser, apiUrl]);
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 lg:p-8 space-y-4 flex flex-col">
+    <div className="flex-1 overflow-y-auto custom-scrollbar p-4 lg:p-8 space-y-4">
       {messages.map((message) => {
-        // ✅ FIX: correct sender check
+        // Sender check
         const isSender =
           String(message.senderId?._id || message.senderId) ===
           String(currentUserId);
@@ -47,7 +47,7 @@ const Messagearea = ({ selectedUser, currentUserId }) => {
             }`}
           >
             <div
-              className={` w-fit max-w-[75%] px-4 py-2 lg:px-5 lg:py-3 rounded-2xl text-sm lg:text-[15px] wrap-break-word whitespace-pre-wrap
+              className={`w-fit max-w-[75%] px-4 py-2 lg:px-5 lg:py-3 rounded-2xl text-sm lg:text-[15px] wrap-break-word whitespace-pre-wrap
                 ${
                   isSender
                     ? 'bg-cyan-600 text-white rounded-br-none shadow-md'

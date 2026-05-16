@@ -18,7 +18,6 @@ export const registerUserController = async (req, res) => {
     if (isuserExist) {
       return res.status(400).json({
         message: 'user already exist',
-       
       });
     }
 
@@ -109,7 +108,12 @@ export const loginUserController = async (req, res) => {
 };
 
 export const logoutUserController = (req, res) => {
-  req.cookie('token', '', { maxAge: 0 });
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  });
+
   res.status(200).json({
     message: 'Logged out successfully',
   });
