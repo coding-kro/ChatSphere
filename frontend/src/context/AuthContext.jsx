@@ -16,7 +16,8 @@ export const AuthProvider = ({ children }) => {
           withCredentials: true,
         });
 
-        setUser(res.data);
+        // ✅ IMPORTANT: store only user object
+        setUser(res.data?.user || null);
       } catch (err) {
         console.error('Failed to fetch user:', err);
         setUser(null);

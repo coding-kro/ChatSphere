@@ -30,7 +30,7 @@ const UserProfile = () => {
       {/* Profile Card */}
       <div className="w-full max-w-5xl bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl flex flex-col md:flex-row overflow-hidden">
         {/* Left Side */}
-        <div className="w-full md:w-1/3 bg-gradient-to-br from-fuchsia-600/30 to-cyan-500/20 flex flex-col items-center justify-center p-6 sm:p-10 text-center">
+        <div className="w-full md:w-1/3 bg-linear-to-br from-fuchsia-600/30 to-cyan-500/20 flex flex-col items-center justify-center p-6 sm:p-10 text-center">
           <img
             src={user?.profilepic || 'https://i.pravatar.cc/200?img=12'}
             alt="user avatar"
@@ -75,7 +75,7 @@ const UserProfile = () => {
 
           {/* Button */}
           <div className="mt-8 sm:mt-10">
-            <button className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-fuchsia-600 to-cyan-500 hover:opacity-90 transition font-medium">
+            <button className="w-full sm:w-auto px-6 py-3 rounded-xl bg-linear-to-r from-fuchsia-600 to-cyan-500 hover:opacity-90 transition font-medium">
               Edit Profile
             </button>
           </div>

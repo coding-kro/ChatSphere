@@ -39,7 +39,7 @@ const Layout = () => {
   }
 
   // Logged in user ID
-  const currentUserId = user?.user?._id;
+  const currentUserId = user?._id;
 
   return (
     <main className="h-screen bg-slate-950 text-white flex overflow-hidden relative">

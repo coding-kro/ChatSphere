@@ -25,8 +25,8 @@ const Dashboard = () => {
         className={`
         ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} 
         fixed inset-0 z-50 w-full bg-slate-950 
-        md:relative md:translate-x-0 md:w-[320px] lg:w-[380px] 
-        md:bg-white/[0.03] backdrop-blur-2xl border-r border-white/10 
+        md:relative md:translate-x-0 md:w-[320px] lg:w-95
+        md:bg-white/3 backdrop-blur-2xl border-r border-white/10 
         flex flex-col transition-transform duration-300 ease-in-out
       `}
       >
@@ -74,7 +74,7 @@ const Dashboard = () => {
             >
               <img
                 src={`https://i.pravatar.cc/150?u=${item}`}
-                className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
+                className="w-12 h-12 rounded-xl object-cover shrink-0"
                 alt=""
               />
               <div className="flex-1 min-w-0">
