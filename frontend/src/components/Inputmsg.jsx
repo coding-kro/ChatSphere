@@ -1,49 +1,132 @@
-import { useState } from 'react';
-import { IoAttach, IoHappyOutline } from 'react-icons/io5';
+import { useEffect, useRef, useState } from 'react';
+import EmojiPicker from 'emoji-picker-react';
+import { IoHappyOutline } from 'react-icons/io5';
+import { TbPhotoFilled } from 'react-icons/tb';
+import axios from 'axios';
 
-const Inputmsg = () => {
+const Inputmsg = ({ selectedUser }) => {
   const [message, setMessage] = useState('');
+  const [showEmoji, setShowEmoji] = useState(false);
 
-  const handleSend = () => {
+  const emojiRef = useRef(null);
+
+  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
+  // Close emoji picker when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (emojiRef.current && !emojiRef.current.contains(event.target)) {
+        setShowEmoji(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Send Message
+  const handleSend = async () => {
     if (!message.trim()) return;
 
-    console.log('Sending message:', message);
+    try {
+      const response = await axios.post(
+        `${apiUrl}/api/messages/send/${selectedUser._id}`,
+        {
+          message,
+        },
+        { withCredentials: true },
+      );
 
-    setMessage('');
+      console.log('API Response:', response.data);
+
+      setMessage('');
+      setShowEmoji(false);
+    } catch (error) {
+      console.error(
+        'Error sending message:',
+        error.response?.data || error.message,
+      );
+    }
   };
 
+  // Enter key send
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       handleSend();
     }
   };
 
+  // Add emoji to input
+  const handleEmojiClick = (emojiData) => {
+    setMessage((prev) => prev + emojiData.emoji);
+  };
+
+  // File Upload
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+
+    if (file) {
+      console.log('Selected File:', file);
+    }
+  };
+
   return (
     <div className="p-4 lg:p-6 bg-slate-950/80 backdrop-blur-xl border-t border-white/5">
       <div className="max-w-4xl mx-auto flex items-center gap-2 lg:gap-3 bg-white/5 p-1.5 lg:p-2 rounded-2xl border border-white/10 focus-within:border-cyan-500/50 transition-all">
-        <button
-          className="hidden sm:block p-2 text-slate-400 hover:text-cyan-400"
-          aria-label="Attach file"
-        >
-          <IoAttach size={22} />
-        </button>
+        {/* Hidden File Input */}
+        <input
+          type="file"
+          id="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleFileChange}
+        />
 
+        {/* File Upload Button */}
+        <label
+          htmlFor="file"
+          className="hidden sm:flex p-2 text-slate-400 hover:text-cyan-400 cursor-pointer transition"
+        >
+          <TbPhotoFilled size={22} />
+        </label>
+
+        {/* Message Input */}
         <input
           type="text"
           placeholder="Message..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="flex-1 bg-transparent border-none py-2 px-2 outline-none text-sm lg:text-[15px]"
+          className="flex-1 bg-transparent border-none py-2 px-2 outline-none text-sm lg:text-[15px] text-white placeholder:text-slate-400"
         />
 
-        <button className="p-2 text-slate-400" aria-label="Emoji">
-          <IoHappyOutline size={22} />
-        </button>
+        {/* Emoji Section */}
+        <div className="relative" ref={emojiRef}>
+          {/* Emoji Button */}
+          <button
+            type="button"
+            className="p-2 text-slate-400 hover:text-yellow-400 transition"
+            aria-label="Emoji"
+            onClick={() => setShowEmoji((prev) => !prev)}
+          >
+            <IoHappyOutline size={22} />
+          </button>
 
+          {/* Emoji Picker */}
+          {showEmoji && (
+            <div className="absolute bottom-14 right-0 z-50">
+              <EmojiPicker onEmojiClick={handleEmojiClick} theme="dark" />
+            </div>
+          )}
+        </div>
+
+        {/* Send Button */}
         <button
           onClick={handleSend}
-          className="bg-cyan-500 hover:bg-cyan-400 px-4 lg:px-6 py-2 lg:py-3 rounded-xl font-bold text-xs lg:text-sm transition-all active:scale-95"
+          className="bg-cyan-500 hover:bg-cyan-400 px-4 lg:px-6 py-2 lg:py-3 rounded-xl font-bold text-xs lg:text-sm transition-all active:scale-95 text-white"
         >
           SEND
         </button>

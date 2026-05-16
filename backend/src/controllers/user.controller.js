@@ -35,7 +35,11 @@ export const getMeController = async (req, res) => {
 
 export const getAllUsersController = async (req, res) => {
   try {
-    const users = await userModel.find();
+    const loggedInUserId = req.user.userId;
+
+    const users = await userModel.find({
+      _id: { $ne: loggedInUserId },
+    });
 
     res.status(200).json({
       success: true,

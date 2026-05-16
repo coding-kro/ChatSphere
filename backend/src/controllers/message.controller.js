@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { messageModel } from '../models/message.model.js';
-
+import cloudinary from '../config/cloudinary.js';
 /**
  * Send Message Controller
  */
@@ -11,8 +11,17 @@ export const sendMessageController = async (req, res) => {
     const { receiverId } = req.params;
 
     const message = req.body.message?.trim();
-    const image = req.body.image?.trim();
+    let imageUrl = '';
 
+    if (req.file) {
+      const uploadResult = await cloudinary.uploader.upload(req.file.path, {
+        folder: 'chat_sphere',
+        resource_type: 'image',
+      });
+
+      imageUrl = uploadResult.secure_url;
+    }
+    
     // Validate IDs
     if (!senderId || !receiverId) {
       return res.status(400).json({
@@ -41,7 +50,7 @@ export const sendMessageController = async (req, res) => {
     }
 
     // Validate content
-    if (!message && !image) {
+    if (!message && !imageUrl) {
       return res.status(400).json({
         success: false,
         message: 'Either message text or image is required',
@@ -53,7 +62,7 @@ export const sendMessageController = async (req, res) => {
       senderId,
       receiverId,
       message,
-      image,
+      image: imageUrl,
       seen: false,
     });
 

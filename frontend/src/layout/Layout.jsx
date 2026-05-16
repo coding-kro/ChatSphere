@@ -10,26 +10,37 @@ import Inputmsg from '../components/Inputmsg';
 import Selectbutton from '../components/Selectbutton';
 import Blankmsg from '../components/Blankmsg';
 
+import { useAuth } from '../context/AuthContext';
+
 const Layout = () => {
+  const { user, loading } = useAuth();
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState('chats');
-
-  // Selected chat user
   const [selectedUser, setSelectedUser] = useState(null);
-
-  // Logged in user ID
-  // Replace this with your auth/context user
-  const currentUserId = '69fbf16fb095acb365a6e05c';
 
   const toggleView = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  // ⛔ Prevent rendering until auth is ready
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-slate-950 text-white">
+        Loading...
+      </div>
+    );
+  }
+
+
+  // ✅ real logged-in user ID
+  const currentUserId = user?.user?._id;
+
+
   return (
     <main className="h-screen bg-slate-950 text-white flex overflow-hidden relative">
       {/* Background Glows */}
       <div className="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none" />
-
       <div className="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500/10 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Sidebar */}
@@ -85,13 +96,11 @@ const Layout = () => {
               setSelectedUser={setSelectedUser}
             />
 
-            {/* FIXED */}
             <Messagearea
               selectedUser={selectedUser}
               currentUserId={currentUserId}
             />
 
-            {/* FIXED */}
             <Inputmsg selectedUser={selectedUser} />
           </>
         ) : (

@@ -23,7 +23,7 @@ const Chatheader = ({ toggleView, user, setSelectedUser }) => {
 
         {/* User Info */}
         <div>
-          <h4 className="font-bold text-sm lg:text-lg">{user.name}</h4>
+          <h4 className="font-bold text-sm lg:text-lg">{user.fullName}</h4>
 
           <p
             className={`text-[10px] lg:text-xs ${

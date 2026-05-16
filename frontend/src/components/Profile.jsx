@@ -1,15 +1,22 @@
 import { IoLogOut } from 'react-icons/io5';
+import { useAuth } from '../context/AuthContext';
 
 const Profile = () => {
+  const { user } = useAuth();
+  const User = user.user;
+
   return (
     <div className="p-4 lg:p-6">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <div className="relative">
             <img
-              src="https://images.pexels.com/photos/18878877/pexels-photo-18878877.jpeg?auto=compress&cs=tinysrgb&w=400&lazy=load"
+              src={
+                User?.image ||
+                'https://images.pexels.com/photos/18878877/pexels-photo-18878877.jpeg?auto=compress&cs=tinysrgb&w=400&lazy=load'
+              }
               className="w-10 h-10 lg:w-12 lg:h-12 rounded-full object-cover ring-2 ring-cyan-500/50"
-              alt="John Doe"
+              alt={User?.fullName || 'User'}
               loading="lazy"
             />
 
@@ -17,7 +24,9 @@ const Profile = () => {
           </div>
 
           <div className="hidden sm:block">
-            <h4 className="font-bold text-sm lg:text-base">John Doe</h4>
+            <h4 className="font-bold text-sm lg:text-base">
+              {User?.fullName || 'User'}
+            </h4>
 
             <p className="text-[10px] text-cyan-400 font-medium tracking-wide">
               ONLINE
