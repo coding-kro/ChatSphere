@@ -11,14 +11,24 @@ const Profile = () => {
   const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
   const logoutUser = async () => {
-    await axios.get(`${apiUrl}/api/auth/logout`, { withCredentials: true });
+    await axios.get(`${apiUrl}/api/auth/logout`, {
+      withCredentials: true,
+    });
     navigate('/login');
+  };
+
+  const openUserProfile = () => {
+    navigate('/userprofile'); // 👈 route to UserProfile.jsx
   };
 
   return (
     <div className="p-4 lg:p-6">
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
+        {/* CLICKABLE PROFILE AREA */}
+        <div
+          onClick={openUserProfile}
+          className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition"
+        >
           <div className="relative">
             <img
               src={
@@ -44,6 +54,7 @@ const Profile = () => {
           </div>
         </div>
 
+        {/* LOGOUT */}
         <button
           aria-label="Logout"
           className="p-2 rounded-xl bg-white/5 hover:bg-red-500/20 text-red-400 transition-all"
