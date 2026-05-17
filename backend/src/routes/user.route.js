@@ -4,6 +4,7 @@ import {
   getMeController,
   updateUserController,
   getAnotherUserController,
+  searchUserController,
 } from '../controllers/user.controller.js';
 import { authMiddleware } from '../middleware/auth.middleware.js';
 import upload from '../config/multer.js';
@@ -23,3 +24,4 @@ router.get(
   authMiddleware,
   getAnotherUserController,
 );
+router.get('/search', authMiddleware, searchUserController);

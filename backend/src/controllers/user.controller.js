@@ -165,3 +165,33 @@ export const getAnotherUserController = async (req, res) => {
     });
   }
 };
+
+export const searchUserController = async (req, res) => {
+  try {
+    const { q } = req.query;
+
+    if (!q) {
+      return res.status(400).json({
+        success: false,
+        message: 'Query parameter "q" is required',
+      });
+    }
+
+    const users = await userModel.find({
+      fullName: { $regex: q, $options: 'i' },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: users.length ? 'Users found' : 'No users found',
+      users,
+    });
+  } catch (error) {
+    console.error('Error on searchUserController: ', error);
+
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+    });
+  }
+};
