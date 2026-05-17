@@ -1,14 +1,16 @@
 import { IoSearch } from 'react-icons/io5';
 
-const Searchbar = () => {
+const Searchbar = ({ query, setQuery }) => {
   return (
     <div className="relative group px-4 lg:px-6 mb-4">
       <IoSearch className="absolute left-8 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-cyan-400 transition-colors" />
 
       <input
         type="text"
-        placeholder="Search..."
-        aria-label="Search chats"
+        placeholder="Search users..."
+        aria-label="Search users"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
         className="
           w-full
           bg-white/5

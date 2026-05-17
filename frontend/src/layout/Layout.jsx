@@ -4,6 +4,8 @@ import { Navigate } from 'react-router-dom';
 import Chatlist from '../components/Chatlist';
 import Userlist from '../components/Userlist';
 import Searchbar from '../components/Searchbar';
+import SearchResult from '../components/SearchResult';
+
 import Profile from '../components/Profile';
 import Chatheader from '../components/Chatheader';
 import Messagearea from '../components/Messagearea';
@@ -19,12 +21,12 @@ const Layout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState('chats');
   const [selectedUser, setSelectedUser] = useState(null);
+  const [query, setQuery] = useState('');
 
   const toggleView = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  // Loading state
   if (loading) {
     return (
       <div className="h-screen flex items-center justify-center bg-slate-950 text-white">
@@ -33,17 +35,15 @@ const Layout = () => {
     );
   }
 
-  // Redirect if user not logged in
   if (!user) {
     return <Navigate to="/login" />;
   }
 
-  // Logged in user ID
   const currentUserId = user?._id;
 
   return (
     <main className="h-screen bg-slate-950 text-white flex overflow-hidden relative">
-      {/* Background Glows */}
+      {/* Background Effects */}
       <div className="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500/10 rounded-full blur-[120px] pointer-events-none" />
 
@@ -63,21 +63,25 @@ const Layout = () => {
       >
         <Profile />
 
-        <Searchbar />
+        {/* Search */}
+        <Searchbar query={query} setQuery={setQuery} />
 
         {/* Tabs */}
         <Selectbutton activeTab={activeTab} setActiveTab={setActiveTab} />
 
-        {/* Chat List */}
-        {activeTab === 'chats' && (
+        {/* 🔥 SEARCH OVERRIDES EVERYTHING */}
+        {query ? (
+          <SearchResult
+            query={query}
+            setSelectedUser={setSelectedUser}
+            setIsSidebarOpen={setIsSidebarOpen}
+          />
+        ) : activeTab === 'chats' ? (
           <Chatlist
             setSelectedUser={setSelectedUser}
             setIsSidebarOpen={setIsSidebarOpen}
           />
-        )}
-
-        {/* User List */}
-        {activeTab === 'contacts' && (
+        ) : (
           <Userlist
             setSelectedUser={setSelectedUser}
             setIsSidebarOpen={setIsSidebarOpen}
