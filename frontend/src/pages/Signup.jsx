@@ -33,7 +33,6 @@ const Signup = () => {
     setPasswordError('');
     setConfirmPasswordError('');
 
-    // Email Validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!emailRegex.test(trimmedEmail)) {
@@ -41,17 +40,15 @@ const Signup = () => {
       return;
     }
 
-    // Password Validation
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{6,}$/;
 
     if (!passwordRegex.test(trimmedPassword)) {
       setPasswordError(
-        'Password must contain at least 6 characters, including letters and numbers',
+        'Password must be at least 6 characters and include letters and numbers',
       );
       return;
     }
 
-    // Confirm Password Validation
     if (trimmedPassword !== trimmedConfirmPassword) {
       setConfirmPasswordError('Passwords do not match');
       return;
@@ -68,7 +65,6 @@ const Signup = () => {
 
       showToast('success', 'Signup successful!');
 
-      // Reset Form
       setFullName('');
       setEmail('');
       setPassword('');
@@ -81,7 +77,6 @@ const Signup = () => {
     } catch (error) {
       const message =
         error.response?.data?.message || 'Signup failed. Try again.';
-
       showToast('error', message);
     } finally {
       setLoading(false);
@@ -89,11 +84,22 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
-        <h2 className="text-2xl font-bold text-gray-900 text-center mb-6">
-          Create an Account
-        </h2>
+    <main className="min-h-screen bg-slate-950 text-white flex items-center justify-center relative overflow-hidden p-4">
+      {/* Background Glows */}
+      <div className="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500/10 rounded-full blur-[120px] pointer-events-none" />
+
+      {/* Card */}
+      <div className="w-full max-w-md bg-slate-900/70 backdrop-blur-xl border border-slate-800 rounded-xl shadow-xl p-8">
+        {/* Brand Header */}
+        <div className="text-center mb-6">
+          <h1 className="text-3xl font-bold tracking-wide bg-linear-to-r from-cyan-400 to-purple-500 text-transparent bg-clip-text">
+            ChatSphere
+          </h1>
+          <p className="text-slate-400 text-sm mt-1">
+            Create your account to continue
+          </p>
+        </div>
 
         <form
           onSubmit={handleSignup}
@@ -103,138 +109,97 @@ const Signup = () => {
         >
           {/* Full Name */}
           <div>
-            <label
-              htmlFor="fullName"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
+            <label className="block text-sm mb-1 text-slate-300">
               Full Name
             </label>
-
             <input
               type="text"
-              id="fullName"
               placeholder="John Doe"
-              required
-              autoComplete="name"
-              disabled={loading}
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+              disabled={loading}
+              className="w-full px-4 py-2 bg-slate-950 border border-slate-800 rounded-lg focus:ring-2 focus:ring-cyan-500 outline-none"
             />
           </div>
 
           {/* Email */}
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
+            <label className="block text-sm mb-1 text-slate-300">
               Email Address
             </label>
-
             <input
               type="email"
-              id="email"
               placeholder="you@example.com"
-              required
-              autoComplete="email"
-              disabled={loading}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+              disabled={loading}
+              className="w-full px-4 py-2 bg-slate-950 border border-slate-800 rounded-lg focus:ring-2 focus:ring-cyan-500 outline-none"
             />
           </div>
 
           {/* Password */}
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
+            <label className="block text-sm mb-1 text-slate-300">
               Password
             </label>
 
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
-                id="password"
                 placeholder="••••••"
-                required
-                autoComplete="new-password"
-                disabled={loading}
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);
                   setPasswordError('');
                 }}
-                aria-invalid={!!passwordError}
-                aria-describedby="password-error"
-                className="w-full px-4 py-2 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                disabled={loading}
+                className="w-full px-4 py-2 pr-12 bg-slate-950 border border-slate-800 rounded-lg focus:ring-2 focus:ring-cyan-500 outline-none"
               />
 
               <button
                 type="button"
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-                disabled={loading}
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-lg text-gray-600 hover:text-blue-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-cyan-400"
               >
                 {showPassword ? <BiSolidHide /> : <BiSolidShow />}
               </button>
             </div>
 
             {passwordError && (
-              <p id="password-error" className="text-red-500 text-sm mt-1">
-                {passwordError}
-              </p>
+              <p className="text-red-400 text-sm mt-1">{passwordError}</p>
             )}
           </div>
 
           {/* Confirm Password */}
           <div>
-            <label
-              htmlFor="confirmPassword"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
+            <label className="block text-sm mb-1 text-slate-300">
               Confirm Password
             </label>
 
             <div className="relative">
               <input
                 type={showConfirmPassword ? 'text' : 'password'}
-                id="confirmPassword"
                 placeholder="••••••"
-                required
-                autoComplete="new-password"
-                disabled={loading}
                 value={confirmPassword}
                 onChange={(e) => {
                   setConfirmPassword(e.target.value);
                   setConfirmPasswordError('');
                 }}
-                aria-invalid={!!confirmPasswordError}
-                aria-describedby="confirm-password-error"
-                className="w-full px-4 py-2 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                disabled={loading}
+                className="w-full px-4 py-2 pr-12 bg-slate-950 border border-slate-800 rounded-lg focus:ring-2 focus:ring-cyan-500 outline-none"
               />
 
               <button
                 type="button"
-                aria-label={
-                  showConfirmPassword ? 'Hide password' : 'Show password'
-                }
-                disabled={loading}
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-lg text-gray-600 hover:text-blue-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-purple-400"
               >
                 {showConfirmPassword ? <BiSolidHide /> : <BiSolidShow />}
               </button>
             </div>
 
             {confirmPasswordError && (
-              <p
-                id="confirm-password-error"
-                className="text-red-500 text-sm mt-1"
-              >
+              <p className="text-red-400 text-sm mt-1">
                 {confirmPasswordError}
               </p>
             )}
@@ -244,37 +209,28 @@ const Signup = () => {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full text-white font-semibold py-2 rounded-lg transition-colors duration-200 ${
+            className={`w-full py-2 rounded-lg font-semibold transition ${
               loading
-                ? 'bg-blue-400 cursor-not-allowed'
-                : 'bg-blue-600 hover:bg-blue-700'
+                ? 'bg-slate-700 cursor-not-allowed'
+                : 'bg-linear-to-r from-cyan-500 to-purple-600 hover:opacity-90'
             }`}
           >
-            {loading ? (
-              <span className="flex items-center justify-center gap-2">
-                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                Signing up...
-              </span>
-            ) : (
-              'Sign Up'
-            )}
+            {loading ? 'Signing up...' : 'Sign Up'}
           </button>
         </form>
 
-        {/* Login Redirect */}
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
-            Already have an account?{' '}
-            <Link
-              to="/login"
-              className="text-blue-600 hover:underline font-medium"
-            >
-              Log in
-            </Link>
-          </p>
+        {/* Login Link */}
+        <div className="mt-6 text-center text-slate-400 text-sm">
+          Already have an account?{' '}
+          <Link
+            to="/login"
+            className="text-cyan-400 hover:text-purple-400 font-medium"
+          >
+            Log in
+          </Link>
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 
