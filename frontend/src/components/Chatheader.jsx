@@ -16,7 +16,7 @@ const Chatheader = ({ toggleView, user, setSelectedUser }) => {
 
         {/* User Image */}
         <img
-          src={`https://i.pravatar.cc/150?u=${user.id}`}
+          src={user?.profilePic || `https://i.pravatar.cc/150?u=${user._id}`}
           className="w-10 h-10 rounded-full border border-cyan-500/30"
           alt={user.name}
         />

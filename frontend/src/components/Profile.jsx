@@ -32,7 +32,7 @@ const Profile = () => {
           <div className="relative">
             <img
               src={
-                User?.image ||
+                User?.profilePic ||
                 'https://images.pexels.com/photos/18878877/pexels-photo-18878877.jpeg?auto=compress&cs=tinysrgb&w=400&lazy=load'
               }
               className="w-10 h-10 lg:w-12 lg:h-12 rounded-full object-cover ring-2 ring-cyan-500/50"

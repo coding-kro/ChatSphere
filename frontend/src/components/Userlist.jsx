@@ -27,6 +27,7 @@ const Userlist = ({ setSelectedUser, setIsSidebarOpen }) => {
     fetchUsers();
   }, [apiUrl]);
 
+
   return (
     <div className="flex-1 overflow-y-auto px-2 lg:px-4 space-y-1 custom-scrollbar">
       {users.length > 0 ? (
@@ -52,7 +53,9 @@ const Userlist = ({ setSelectedUser, setIsSidebarOpen }) => {
             {/* Avatar */}
             <div className="relative shrink-0">
               <img
-                src={`https://i.pravatar.cc/150?u=${user._id}`}
+                src={
+                  user?.profilePic || `https://i.pravatar.cc/150?u=${user._id}`
+                }
                 className="w-12 h-12 rounded-xl object-cover"
                 alt={user.fullName}
                 loading="lazy"

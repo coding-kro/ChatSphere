@@ -32,7 +32,7 @@ const UserProfile = () => {
         {/* Left Side */}
         <div className="w-full md:w-1/3 bg-linear-to-br from-fuchsia-600/30 to-cyan-500/20 flex flex-col items-center justify-center p-6 sm:p-10 text-center">
           <img
-            src={user?.profilepic || 'https://i.pravatar.cc/200?img=12'}
+            src={user?.profilePic || 'https://i.pravatar.cc/200?img=12'}
             alt="user avatar"
             className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-white/20 shadow-lg"
           />
