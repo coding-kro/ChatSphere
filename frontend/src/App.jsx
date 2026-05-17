@@ -4,7 +4,7 @@ import Login from './pages/Login';
 import { ToastContainer } from 'react-toastify';
 import Layout from './layout/Layout';
 import UserProfile from './pages/UserProfile';
-import UpdateUserProfile from './pages/UpdateUserProfile';
+import SeeProfile from './pages/SeeProfile';
 import NotFound from './pages/NotFound';
 import Dashboard from './pages/Dashboard';
 
@@ -13,12 +13,12 @@ const App = () => {
     <BrowserRouter>
       <ToastContainer />
       <Routes>
-        <Route path="/test" element={<UpdateUserProfile />} />
+        <Route path="/test" element={<Dashboard />} />
         <Route index element={<Layout />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/userprofile" element={<UserProfile />} />
-        <Route path="/updateprofile" element={<UpdateUserProfile />} />
+        <Route path="/seeprofile/:anotherUserId" element={<SeeProfile />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

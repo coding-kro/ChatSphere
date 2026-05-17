@@ -3,6 +3,7 @@ import {
   getAllUsersController,
   getMeController,
   updateUserController,
+  getAnotherUserController,
 } from '../controllers/user.controller.js';
 import { authMiddleware } from '../middleware/auth.middleware.js';
 import upload from '../config/multer.js';
@@ -16,4 +17,9 @@ router.put(
   authMiddleware,
   upload.single('image'),
   updateUserController,
+);
+router.get(
+  '/seeprofile/:anotherUserId',
+  authMiddleware,
+  getAnotherUserController,
 );

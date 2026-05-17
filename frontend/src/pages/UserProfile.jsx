@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { showToast } from '../utils/showToast.js';
+import { FaCamera } from 'react-icons/fa';
 
 const UserProfile = () => {
   const [user, setUser] = useState(null);
@@ -104,7 +105,7 @@ const UserProfile = () => {
             />
 
             <label className="absolute bottom-0 right-0 bg-cyan-500 text-black p-2 rounded-full cursor-pointer hover:scale-105 transition">
-              📷
+              <FaCamera />
               <input
                 type="file"
                 className="hidden"

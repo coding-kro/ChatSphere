@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { userModel } from '../models/user.model.js';
 import cloudinary from '../config/cloudinary.js';
+import mongoose from 'mongoose';
 
 export const getMeController = async (req, res) => {
   try {
@@ -115,6 +116,48 @@ export const updateUserController = async (req, res) => {
     });
   } catch (error) {
     console.error('Error in updateUserController: ', error);
+
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+    });
+  }
+};
+
+export const getAnotherUserController = async (req, res) => {
+  try {
+    const { anotherUserId } = req.params;
+
+    if (!anotherUserId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Another user id not found',
+      });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(anotherUserId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid user id',
+      });
+    }
+
+    const user = await userModel.findById(anotherUserId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Another user found',
+      user,
+    });
+  } catch (error) {
+    console.error('Error on getAnotherUserController: ', error);
 
     return res.status(500).json({
       success: false,
