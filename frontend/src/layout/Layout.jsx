@@ -13,6 +13,8 @@ import Inputmsg from '../components/Inputmsg';
 import Selectbutton from '../components/Selectbutton';
 import Blankmsg from '../components/Blankmsg';
 
+import ImagePreview from '../components/ImagePreview';
+
 import { useAuth } from '../context/AuthContext';
 
 const Layout = () => {
@@ -22,6 +24,8 @@ const Layout = () => {
   const [activeTab, setActiveTab] = useState('chats');
   const [selectedUser, setSelectedUser] = useState(null);
   const [query, setQuery] = useState('');
+
+  const [previewImage, setPreviewImage] = useState(null);
 
   const toggleView = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -107,6 +111,7 @@ const Layout = () => {
             <Messagearea
               selectedUser={selectedUser}
               currentUserId={currentUserId}
+              setPreviewImage={setPreviewImage}
             />
 
             <Inputmsg
@@ -118,6 +123,13 @@ const Layout = () => {
           <Blankmsg />
         )}
       </section>
+      {/* IMAGE PREVIEW MODAL */}
+      {previewImage && (
+        <ImagePreview
+          image={previewImage}
+          onClose={() => setPreviewImage(null)}
+        />
+      )}
     </main>
   );
 };

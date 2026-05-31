@@ -2,9 +2,12 @@ import axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
 import { showToast } from '../utils/showToast';
 import { socket } from '../socket';
+// import ImagePreview from '../components/ImagePreview';
 
-const Messagearea = ({ selectedUser, currentUserId }) => {
+const Messagearea = ({ selectedUser, currentUserId, setPreviewImage }) => {
   const [messages, setMessages] = useState([]);
+  // const [previewImage, setPreviewImage] = useState(null);
+
   const scrollRef = useRef(null);
 
   const apiUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
@@ -43,8 +46,6 @@ const Messagearea = ({ selectedUser, currentUserId }) => {
     if (!selectedUser?._id) return;
 
     const handleMessage = (newMessage) => {
-      console.log('Realtime Message:', newMessage);
-
       const senderId = newMessage.senderId?._id || newMessage.senderId;
 
       const receiverId = newMessage.receiverId?._id || newMessage.receiverId;
@@ -56,7 +57,6 @@ const Messagearea = ({ selectedUser, currentUserId }) => {
       if (!isCurrentChat) return;
 
       setMessages((prev) => {
-        // prevent duplicate messages
         const exists = prev.some((msg) => msg._id === newMessage._id);
 
         if (exists) return prev;
@@ -96,8 +96,7 @@ const Messagearea = ({ selectedUser, currentUserId }) => {
             }`}
           >
             <div
-              className={`w-fit max-w-[75%] px-4 py-2 lg:px-5 lg:py-3 rounded-2xl text-sm lg:text-[15px] break-words whitespace-pre-wrap
-              ${
+              className={`w-fit max-w-[75%] px-4 py-2 lg:px-5 lg:py-3 rounded-2xl text-sm lg:text-[15px] wrap-break-word whitespace-pre-wrap ${
                 isSender
                   ? 'bg-cyan-600 text-white rounded-br-none shadow-md'
                   : 'bg-white/10 text-white rounded-bl-none'
@@ -113,7 +112,8 @@ const Messagearea = ({ selectedUser, currentUserId }) => {
                 <img
                   src={message.image}
                   alt="chat media"
-                  className="mt-2 max-w-full max-h-60 object-cover rounded-lg"
+                  className="mt-2 max-w-full max-h-60 object-cover rounded-lg cursor-pointer hover:opacity-90 transition"
+                  onClick={() => setPreviewImage(message.image)}
                 />
               )}
 
@@ -131,6 +131,8 @@ const Messagearea = ({ selectedUser, currentUserId }) => {
           </div>
         );
       })}
+
+   
 
       <div ref={scrollRef} />
     </div>
