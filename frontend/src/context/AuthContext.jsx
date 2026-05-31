@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { createContext, useContext, useEffect, useState } from 'react';
+import { socket } from '../socket'; // 👈 import your socket instance
 
 export const AuthContext = createContext();
 
@@ -16,8 +17,9 @@ export const AuthProvider = ({ children }) => {
           withCredentials: true,
         });
 
-        // ✅ IMPORTANT: store only user object
-        setUser(res.data?.user || null);
+        const userData = res.data?.user || null;
+
+        setUser(userData);
       } catch (err) {
         console.error('Failed to fetch user:', err);
         setUser(null);
@@ -28,6 +30,16 @@ export const AuthProvider = ({ children }) => {
 
     fetchUser();
   }, [apiUrl]);
+
+  /**
+   * ✅ SOCKET JOIN (IMPORTANT PART)
+   */
+  useEffect(() => {
+    if (user?._id) {
+      socket.connect(); // ensure connection
+      socket.emit('join', user._id);
+    }
+  }, [user]);
 
   return (
     <AuthContext.Provider value={{ user, setUser, loading }}>

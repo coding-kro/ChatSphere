@@ -4,26 +4,37 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { socket } from '../socket';
 
-const Chatheader = ({ toggleView, user, setSelectedUser, currentUserId }) => {
+const Chatheader = ({ toggleView, user, setSelectedUser }) => {
   const navigate = useNavigate();
-  const [onlineUsers, setOnlineUsers] = useState([]);
+  const [userTyping, setUserTyping] = useState(false);
 
   const openUserProfile = () => {
     navigate(`/seeprofile/${user._id}`);
   };
 
-  // 🟢 listen online users from socket
   useEffect(() => {
-    socket.on('online-users', (users) => {
-      setOnlineUsers(users);
-    });
+    if (!user?._id) return;
+
+    const handleTyping = ({ senderId }) => {
+      if (senderId === user._id) {
+        setUserTyping(true);
+      }
+    };
+
+    const handleStopTyping = ({ senderId }) => {
+      if (senderId === user._id) {
+        setUserTyping(false);
+      }
+    };
+
+    socket.on('userTyping', handleTyping);
+    socket.on('userStopTyping', handleStopTyping);
 
     return () => {
-      socket.off('online-users');
+      socket.off('userTyping', handleTyping);
+      socket.off('userStopTyping', handleStopTyping);
     };
-  }, []);
-
-  const isOnline = onlineUsers.includes(user?._id);
+  }, [user?._id]);
 
   return (
     <header className="px-4 lg:px-8 py-3 lg:py-5 flex items-center justify-between border-b border-white/5 bg-slate-950/40 backdrop-blur-md">
@@ -50,13 +61,11 @@ const Chatheader = ({ toggleView, user, setSelectedUser, currentUserId }) => {
           <div>
             <h4 className="font-bold text-sm lg:text-lg">{user.fullName}</h4>
 
-            <p
-              className={`text-[10px] lg:text-xs ${
-                isOnline ? 'text-green-400' : 'text-gray-400'
-              }`}
-            >
-              {isOnline ? 'Online' : 'Offline'}
-            </p>
+            {userTyping && (
+              <p className="text-[10px] lg:text-xs text-cyan-400 animate-pulse">
+                Typing...
+              </p>
+            )}
           </div>
         </div>
       </div>

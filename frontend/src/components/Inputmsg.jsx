@@ -3,6 +3,7 @@ import EmojiPicker from 'emoji-picker-react';
 import { IoHappyOutline } from 'react-icons/io5';
 import { TbPhotoFilled } from 'react-icons/tb';
 import axios from 'axios';
+import { socket } from '../socket';
 
 const Inputmsg = ({ selectedUser }) => {
   const [message, setMessage] = useState('');
@@ -11,6 +12,8 @@ const Inputmsg = ({ selectedUser }) => {
   const [previewImage, setPreviewImage] = useState('');
 
   const emojiRef = useRef(null);
+
+  const typingTimeoutRef = useRef(null);
 
   const apiUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 
@@ -31,11 +34,28 @@ const Inputmsg = ({ selectedUser }) => {
     };
   }, []);
 
+  useEffect(() => {
+    return () => {
+      clearTimeout(typingTimeoutRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    clearTimeout(typingTimeoutRef.current);
+
+    return () => {
+      if (selectedUser?._id) {
+        socket.emit('stopTyping', {
+          receiverId: selectedUser._id,
+        });
+      }
+    };
+  }, [selectedUser]);
+
   /**
    * SEND MESSAGE
    */
   const handleSend = async () => {
-    // prevent empty send
     if (!message.trim() && !selectedImage) return;
 
     try {
@@ -58,14 +78,18 @@ const Inputmsg = ({ selectedUser }) => {
         },
       );
 
-      // clear input
-      setMessage('');
+      // Stop typing immediately after sending
+      if (selectedUser?._id) {
+        socket.emit('stopTyping', {
+          receiverId: selectedUser._id,
+        });
+      }
 
-      // clear image
+      clearTimeout(typingTimeoutRef.current);
+
+      setMessage('');
       setSelectedImage(null);
       setPreviewImage('');
-
-      // close emoji
       setShowEmoji(false);
     } catch (error) {
       console.error(
@@ -153,7 +177,40 @@ const Inputmsg = ({ selectedUser }) => {
           type="text"
           placeholder="Message..."
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value;
+
+            setMessage(value);
+
+            // Input empty => stop typing immediately
+            if (!value.trim()) {
+              if (selectedUser?._id) {
+                socket.emit('stopTyping', {
+                  receiverId: selectedUser._id,
+                });
+              }
+
+              clearTimeout(typingTimeoutRef.current);
+              return;
+            }
+
+            // User typing
+            if (selectedUser?._id) {
+              socket.emit('typing', {
+                receiverId: selectedUser._id,
+              });
+            }
+
+            clearTimeout(typingTimeoutRef.current);
+
+            typingTimeoutRef.current = setTimeout(() => {
+              if (selectedUser?._id) {
+                socket.emit('stopTyping', {
+                  receiverId: selectedUser._id,
+                });
+              }
+            }, 700);
+          }}
           onKeyDown={handleKeyDown}
           className="flex-1 bg-transparent border-none py-2 px-2 outline-none text-sm lg:text-[15px] text-white placeholder:text-slate-400"
         />

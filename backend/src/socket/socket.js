@@ -1,6 +1,7 @@
 import { Server } from 'socket.io';
 
 const onlineUsers = new Map();
+// userId -> Set(socketIds)
 
 let io;
 
@@ -13,16 +14,17 @@ export const initSocket = (server) => {
   });
 
   io.on('connection', (socket) => {
-    console.log('Connected:', socket.id);
+    console.log('🔌 Connected:', socket.id);
 
     /**
-     * USER JOIN
+     * =========================
+     * JOIN USER
+     * =========================
      */
     socket.on('join', (userId) => {
-      console.log('JOIN EVENT:', userId);
       if (!userId) return;
 
-      socket.userId = userId;
+      socket.userId = userId; // IMPORTANT
 
       if (!onlineUsers.has(userId)) {
         onlineUsers.set(userId, new Set());
@@ -30,27 +32,72 @@ export const initSocket = (server) => {
 
       onlineUsers.get(userId).add(socket.id);
 
-      console.log('Online Users:', onlineUsers);
+      console.log('👤 User joined:', userId);
 
       io.emit('online-users', Array.from(onlineUsers.keys()));
     });
 
     /**
-     * USER DISCONNECT
+     * =========================
+     * TYPING EVENT
+     * =========================
+     */
+    socket.on('typing', ({ receiverId, senderId }) => {
+      console.log('TYPING EVENT', { receiverId, senderId });
+      const sender = senderId || socket.userId;
+
+      if (!receiverId) return;
+
+      const receiverSockets = onlineUsers.get(receiverId);
+
+      console.log('Receiver sockets:', receiverSockets);
+
+      if (!receiverSockets) return;
+
+      for (const socketId of receiverSockets) {
+        io.to(socketId).emit('userTyping', {
+          senderId: sender,
+        });
+      }
+    });
+
+    /**
+     * =========================
+     * STOP TYPING EVENT
+     * =========================
+     */
+    socket.on('stopTyping', ({ receiverId, senderId }) => {
+      const sender = senderId || socket.userId;
+
+      if (!receiverId) return;
+
+      const receiverSockets = onlineUsers.get(receiverId);
+      if (!receiverSockets) return;
+
+      for (const socketId of receiverSockets) {
+        io.to(socketId).emit('userStopTyping', {
+          senderId: sender,
+        });
+      }
+    });
+
+    /**
+     * =========================
+     * DISCONNECT
+     * =========================
      */
     socket.on('disconnect', () => {
-      console.log('Disconnected:', socket.id);
+      console.log('❌ Disconnected:', socket.id);
 
       const userId = socket.userId;
-
       if (!userId) return;
 
-      const userSockets = onlineUsers.get(userId);
+      const sockets = onlineUsers.get(userId);
 
-      if (userSockets) {
-        userSockets.delete(socket.id);
+      if (sockets) {
+        sockets.delete(socket.id);
 
-        if (userSockets.size === 0) {
+        if (sockets.size === 0) {
           onlineUsers.delete(userId);
         }
       }
@@ -63,5 +110,4 @@ export const initSocket = (server) => {
 };
 
 export const getIO = () => io;
-
 export { onlineUsers };
