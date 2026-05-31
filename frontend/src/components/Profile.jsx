@@ -2,6 +2,8 @@ import { IoLogOut } from 'react-icons/io5';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { socket } from '../socket';
+import { useEffect, useState } from 'react';
 
 const Profile = () => {
   const { user } = useAuth();
@@ -10,21 +12,40 @@ const Profile = () => {
 
   const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
-  const logoutUser = async () => {
-    await axios.get(`${apiUrl}/api/auth/logout`, {
-      withCredentials: true,
+  const [onlineUsers, setOnlineUsers] = useState([]);
+
+  // 🟢 listen online users
+  useEffect(() => {
+    socket.on('online-users', (users) => {
+      setOnlineUsers(users);
     });
-    navigate('/login');
+
+    return () => socket.off('online-users');
+  }, []);
+
+  const isOnline = onlineUsers.includes(User?._id);
+
+  const logoutUser = async () => {
+    try {
+      await axios.get(`${apiUrl}/api/auth/logout`, {
+        withCredentials: true,
+      });
+
+      socket.disconnect(); // IMPORTANT
+      navigate('/login');
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const openUserProfile = () => {
-    navigate('/userprofile'); // 👈 route to UserProfile.jsx
+    navigate('/userprofile');
   };
 
   return (
     <div className="p-4 lg:p-6">
       <div className="flex items-center justify-between mb-6">
-        {/* CLICKABLE PROFILE AREA */}
+        {/* PROFILE */}
         <div
           onClick={openUserProfile}
           className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition"
@@ -37,10 +58,14 @@ const Profile = () => {
               }
               className="w-10 h-10 lg:w-12 lg:h-12 rounded-full object-cover ring-2 ring-cyan-500/50"
               alt={User?.fullName || 'User'}
-              loading="lazy"
             />
 
-            <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-slate-950 rounded-full"></span>
+            {/* ONLINE DOT */}
+            <span
+              className={`absolute bottom-0 right-0 w-3 h-3 border-2 border-slate-950 rounded-full ${
+                isOnline ? 'bg-green-500' : 'bg-gray-500'
+              }`}
+            />
           </div>
 
           <div className="hidden sm:block">
@@ -48,8 +73,12 @@ const Profile = () => {
               {User?.fullName || 'User'}
             </h4>
 
-            <p className="text-[10px] text-cyan-400 font-medium tracking-wide">
-              ONLINE
+            <p
+              className={`text-[10px] font-medium tracking-wide ${
+                isOnline ? 'text-green-400' : 'text-gray-400'
+              }`}
+            >
+              {isOnline ? 'ONLINE' : 'OFFLINE'}
             </p>
           </div>
         </div>

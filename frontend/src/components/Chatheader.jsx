@@ -1,13 +1,29 @@
 import { IoChevronBack } from 'react-icons/io5';
 import { RxCross2 } from 'react-icons/rx';
 import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { socket } from '../socket';
 
-const Chatheader = ({ toggleView, user, setSelectedUser }) => {
+const Chatheader = ({ toggleView, user, setSelectedUser, currentUserId }) => {
   const navigate = useNavigate();
+  const [onlineUsers, setOnlineUsers] = useState([]);
 
   const openUserProfile = () => {
     navigate(`/seeprofile/${user._id}`);
   };
+
+  // 🟢 listen online users from socket
+  useEffect(() => {
+    socket.on('online-users', (users) => {
+      setOnlineUsers(users);
+    });
+
+    return () => {
+      socket.off('online-users');
+    };
+  }, []);
+
+  const isOnline = onlineUsers.includes(user?._id);
 
   return (
     <header className="px-4 lg:px-8 py-3 lg:py-5 flex items-center justify-between border-b border-white/5 bg-slate-950/40 backdrop-blur-md">
@@ -20,7 +36,7 @@ const Chatheader = ({ toggleView, user, setSelectedUser }) => {
           <IoChevronBack size={24} />
         </button>
 
-        {/* Clickable User Info */}
+        {/* User Info */}
         <div
           onClick={openUserProfile}
           className="flex items-center gap-3 cursor-pointer"
@@ -36,10 +52,10 @@ const Chatheader = ({ toggleView, user, setSelectedUser }) => {
 
             <p
               className={`text-[10px] lg:text-xs ${
-                user.online ? 'text-green-400' : 'text-gray-400'
+                isOnline ? 'text-green-400' : 'text-gray-400'
               }`}
             >
-              {user.online ? 'Online' : 'Offline'}
+              {isOnline ? 'Online' : 'Offline'}
             </p>
           </div>
         </div>

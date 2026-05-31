@@ -6,12 +6,14 @@ const messageSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
+      index: true,
     },
 
     receiverId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
+      index: true,
     },
 
     message: {
@@ -22,7 +24,7 @@ const messageSchema = new mongoose.Schema(
 
     image: {
       type: String,
-      default: '',
+      default: null,
     },
 
     seen: {
@@ -34,5 +36,8 @@ const messageSchema = new mongoose.Schema(
     timestamps: true,
   },
 );
+
+// helpful index for chat queries
+messageSchema.index({ senderId: 1, receiverId: 1, createdAt: -1 });
 
 export const messageModel = mongoose.model('Message', messageSchema);

@@ -1,28 +1,24 @@
 import mongoose from 'mongoose';
 import { messageModel } from '../models/message.model.js';
 import cloudinary from '../config/cloudinary.js';
+import { getIO, onlineUsers } from '../socket/socket.js';
+
 /**
- * Send Message Controller
+ * 💬 SEND MESSAGE
  */
 export const sendMessageController = async (req, res) => {
   try {
-    // Ideally from auth middleware
     const senderId = req.user?.userId;
     const { receiverId } = req.params;
 
     const message = req.body.message?.trim();
     let imageUrl = '';
 
-    if (req.file) {
-      const uploadResult = await cloudinary.uploader.upload(req.file.path, {
-        folder: 'chat_sphere',
-        resource_type: 'image',
-      });
+    const io = getIO();
 
-      imageUrl = uploadResult.secure_url;
-    }
-    
-    // Validate IDs
+    /**
+     * ✅ VALIDATION
+     */
     if (!senderId || !receiverId) {
       return res.status(400).json({
         success: false,
@@ -30,7 +26,6 @@ export const sendMessageController = async (req, res) => {
       });
     }
 
-    // Validate MongoDB ObjectIds
     if (
       !mongoose.Types.ObjectId.isValid(senderId) ||
       !mongoose.Types.ObjectId.isValid(receiverId)
@@ -41,15 +36,37 @@ export const sendMessageController = async (req, res) => {
       });
     }
 
-    // Prevent self messaging
-    if (senderId === receiverId) {
+    if (senderId.toString() === receiverId.toString()) {
       return res.status(400).json({
         success: false,
         message: 'You cannot send messages to yourself',
       });
     }
 
-    // Validate content
+    /**
+     * 📷 IMAGE UPLOAD
+     */
+    if (req.file) {
+      try {
+        const uploadResult = await cloudinary.uploader.upload(req.file.path, {
+          folder: 'chat_sphere',
+          resource_type: 'image',
+        });
+
+        imageUrl = uploadResult.secure_url;
+      } catch (error) {
+        console.error('Cloudinary Error:', error);
+
+        return res.status(500).json({
+          success: false,
+          message: 'Image upload failed',
+        });
+      }
+    }
+
+    /**
+     * ❌ EMPTY MESSAGE CHECK
+     */
     if (!message && !imageUrl) {
       return res.status(400).json({
         success: false,
@@ -57,7 +74,9 @@ export const sendMessageController = async (req, res) => {
       });
     }
 
-    // Create message
+    /**
+     * 💾 SAVE MESSAGE
+     */
     const newMessage = await messageModel.create({
       senderId,
       receiverId,
@@ -66,6 +85,46 @@ export const sendMessageController = async (req, res) => {
       seen: false,
     });
 
+    console.log('Sender ID:', senderId.toString());
+    console.log('Receiver ID:', receiverId.toString());
+
+    /**
+     * ⚡ GET SOCKETS
+     */
+    const receiverSockets = onlineUsers.get(receiverId.toString());
+
+    const senderSockets = onlineUsers.get(senderId.toString());
+
+    console.log('Receiver Sockets:', receiverSockets);
+    console.log('Sender Sockets:', senderSockets);
+
+    /**
+     * 📤 SEND TO RECEIVER
+     */
+    if (io && receiverSockets?.size > 0) {
+      receiverSockets.forEach((socketId) => {
+        io.to(socketId).emit('receive-message', newMessage);
+
+        console.log(`✅ Message sent to receiver socket: ${socketId}`);
+      });
+    } else {
+      console.log('❌ Receiver not online');
+    }
+
+    /**
+     * 📤 SEND TO SENDER
+     */
+    if (io && senderSockets?.size > 0) {
+      senderSockets.forEach((socketId) => {
+        io.to(socketId).emit('receive-message', newMessage);
+
+        console.log(`✅ Message sent to sender socket: ${socketId}`);
+      });
+    }
+
+    /**
+     * ✅ RESPONSE
+     */
     return res.status(201).json({
       success: true,
       message: 'Message sent successfully',
@@ -82,15 +141,21 @@ export const sendMessageController = async (req, res) => {
 };
 
 /**
- * Get Messages Controller
+ * 📥 GET MESSAGES
  */
 export const getMessagesController = async (req, res) => {
   try {
-    // Ideally from auth middleware
     const userId = req.user?.userId;
     const { selectedUserId } = req.params;
 
-    // Validate required fields
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 50;
+
+    const io = getIO();
+
+    /**
+     * ✅ VALIDATION
+     */
     if (!userId || !selectedUserId) {
       return res.status(400).json({
         success: false,
@@ -98,7 +163,6 @@ export const getMessagesController = async (req, res) => {
       });
     }
 
-    // Validate MongoDB ObjectIds
     if (
       !mongoose.Types.ObjectId.isValid(userId) ||
       !mongoose.Types.ObjectId.isValid(selectedUserId)
@@ -109,7 +173,9 @@ export const getMessagesController = async (req, res) => {
       });
     }
 
-    // Fetch chat messages between two users
+    /**
+     * 📥 GET CHAT
+     */
     const messages = await messageModel
       .find({
         $or: [
@@ -123,13 +189,47 @@ export const getMessagesController = async (req, res) => {
           },
         ],
       })
-      .sort({ createdAt: 1 }) // Sort by creation time
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
       .lean();
 
+    /**
+     * 👁️ MARK AS SEEN
+     */
+    await messageModel.updateMany(
+      {
+        senderId: selectedUserId,
+        receiverId: userId,
+        seen: false,
+      },
+      {
+        $set: {
+          seen: true,
+        },
+      },
+    );
+
+    /**
+     * ⚡ NOTIFY SENDER
+     */
+    const senderSockets = onlineUsers.get(selectedUserId.toString());
+
+    if (io && senderSockets?.size > 0) {
+      senderSockets.forEach((socketId) => {
+        io.to(socketId).emit('messages-seen', {
+          by: userId,
+        });
+      });
+    }
+
+    /**
+     * ✅ RESPONSE
+     */
     return res.status(200).json({
       success: true,
       count: messages.length,
-      data: messages,
+      data: messages.reverse(),
     });
   } catch (error) {
     console.error('Get Messages Error:', error);
@@ -137,6 +237,72 @@ export const getMessagesController = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Internal server error',
+    });
+  }
+};
+
+/**
+ * 👁️ MARK MESSAGES AS SEEN
+ */
+export const markMessagesSeenController = async (req, res) => {
+  try {
+    const userId = req.user?.userId;
+    const { senderId } = req.params;
+
+    const io = getIO();
+
+    /**
+     * ✅ VALIDATION
+     */
+    if (!userId || !senderId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid request',
+      });
+    }
+
+    /**
+     * 👁️ UPDATE SEEN
+     */
+    await messageModel.updateMany(
+      {
+        senderId,
+        receiverId: userId,
+        seen: false,
+      },
+      {
+        $set: {
+          seen: true,
+        },
+      },
+    );
+
+    /**
+     * ⚡ SOCKET NOTIFY
+     */
+    const senderSockets = onlineUsers.get(senderId.toString());
+
+    if (io && senderSockets?.size > 0) {
+      senderSockets.forEach((socketId) => {
+        io.to(socketId).emit('messages-seen', {
+          by: userId,
+        });
+      });
+    }
+
+    /**
+     * ✅ RESPONSE
+     */
+    return res.status(200).json({
+      success: true,
+      message: 'Messages marked as seen',
+    });
+  } catch (error) {
+    console.error('Seen Error:', error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
     });
   }
 };

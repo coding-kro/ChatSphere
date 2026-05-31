@@ -109,7 +109,10 @@ const Layout = () => {
               currentUserId={currentUserId}
             />
 
-            <Inputmsg selectedUser={selectedUser} />
+            <Inputmsg
+              selectedUser={selectedUser}
+              currentUserId={currentUserId}
+            />
           </>
         ) : (
           <Blankmsg />
