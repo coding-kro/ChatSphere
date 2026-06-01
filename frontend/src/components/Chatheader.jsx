@@ -3,6 +3,7 @@ import { RxCross2 } from 'react-icons/rx';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { socket } from '../socket';
+import profilePic from '../assets/user.png';
 
 const Chatheader = ({ toggleView, user, setSelectedUser }) => {
   const navigate = useNavigate();
@@ -53,13 +54,13 @@ const Chatheader = ({ toggleView, user, setSelectedUser }) => {
           className="flex items-center gap-3 cursor-pointer"
         >
           <img
-            src={user?.profilePic || `https://i.pravatar.cc/150?u=${user._id}`}
+            src={user?.profilePic || profilePic}
             className="w-10 h-10 rounded-full border border-cyan-500/30"
-            alt={user.fullName}
+            alt={user?.fullName}
           />
 
           <div>
-            <h4 className="font-bold text-sm lg:text-lg">{user.fullName}</h4>
+            <h4 className="font-bold text-sm lg:text-lg">{user?.fullName}</h4>
 
             {userTyping && (
               <p className="text-[10px] lg:text-xs text-cyan-400 animate-pulse">

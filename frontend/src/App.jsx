@@ -13,7 +13,6 @@ import { ToastContainer } from 'react-toastify';
 import { socket } from './socket';
 import { useAuth } from './context/AuthContext';
 
-
 const App = () => {
   const { user, loading } = useAuth();
 

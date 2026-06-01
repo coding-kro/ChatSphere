@@ -4,6 +4,7 @@ import { showToast } from '../utils/showToast.js';
 import { FaCamera } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { IoIosArrowBack } from 'react-icons/io';
+import profilePic from '../assets/user.png';
 
 const UserProfile = () => {
   const navigate = useNavigate();
@@ -87,7 +88,7 @@ const UserProfile = () => {
       <div className="absolute top-[-10%] left-[-10%] w-[60%] sm:w-[50%] h-[60%] sm:h-[50%] bg-cyan-500/10 blur-[120px] rounded-full" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[60%] sm:w-[50%] h-[60%] sm:h-[50%] bg-fuchsia-500/10 blur-[120px] rounded-full" />
 
-      {/* 🔙 BACK BUTTON (RESPONSIVE FIXED) */}
+      {/* BACK BUTTON */}
       <button
         onClick={() => navigate(-1)}
         className="
@@ -121,7 +122,7 @@ const UserProfile = () => {
               src={
                 preview ||
                 user?.profilePic ||
-                'https://i.pravatar.cc/200?img=12'
+                profilePic
               }
               className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-4 border-cyan-500/30 shadow-lg"
               alt="avatar"

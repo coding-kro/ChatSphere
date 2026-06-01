@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { RxCross2 } from 'react-icons/rx';
+import profilePic from '../assets/user.png';
 
 const SeeProfile = () => {
   const [user, setUser] = useState(null);
@@ -68,7 +69,7 @@ const SeeProfile = () => {
         {/* Avatar */}
         <div className="flex flex-col items-center text-center">
           <img
-            src={user?.profilePic || 'https://i.pravatar.cc/200?img=12'}
+            src={user?.profilePic || profilePic}
             alt="avatar"
             className="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-white/20 shadow-lg"
           />

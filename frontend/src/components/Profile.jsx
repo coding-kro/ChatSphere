@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { socket } from '../socket';
 import { useEffect, useState } from 'react';
+import profilePic from '../assets/user.png';
 
 const Profile = () => {
   const { user } = useAuth();
@@ -31,7 +32,7 @@ const Profile = () => {
         withCredentials: true,
       });
 
-      socket.disconnect(); 
+      socket.disconnect();
       navigate('/login');
     } catch (err) {
       console.log(err);
@@ -52,10 +53,7 @@ const Profile = () => {
         >
           <div className="relative">
             <img
-              src={
-                User?.profilePic ||
-                'https://images.pexels.com/photos/18878877/pexels-photo-18878877.jpeg?auto=compress&cs=tinysrgb&w=400&lazy=load'
-              }
+              src={User?.profilePic || profilePic}
               className="w-10 h-10 lg:w-12 lg:h-12 rounded-full object-cover ring-2 ring-cyan-500/50"
               alt={User?.fullName || 'User'}
             />

@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { showToast } from '../utils/showToast';
 import { socket } from '../socket';
+import profilePic from '../assets/user.png';
 
 const Chatlist = ({ setSelectedUser, setIsSidebarOpen }) => {
   const [users, setUsers] = useState([]);
@@ -29,7 +30,7 @@ const Chatlist = ({ setSelectedUser, setIsSidebarOpen }) => {
     fetchUsers();
   }, [apiUrl]);
 
-  // 🟢 ONLINE USERS SOCKET
+  // ONLINE USERS SOCKET
   useEffect(() => {
     socket.on('online-users', (users) => {
       setOnlineUsers(users);
@@ -61,12 +62,9 @@ const Chatlist = ({ setSelectedUser, setIsSidebarOpen }) => {
               {/* Avatar */}
               <div className="relative shrink-0">
                 <img
-                  src={
-                    user?.profilePic ||
-                    `https://i.pravatar.cc/150?u=${user._id}`
-                  }
+                  src={user?.profilePic || profilePic}
                   className="w-12 h-12 rounded-xl object-cover"
-                  alt={user.fullName}
+                  alt={user?.fullName}
                 />
 
                 {/* Online dot */}
@@ -81,7 +79,7 @@ const Chatlist = ({ setSelectedUser, setIsSidebarOpen }) => {
               <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-center">
                   <h3 className="font-semibold text-sm lg:text-base truncate">
-                    {user.fullName}
+                    {user?.fullName}
                   </h3>
                 </div>
 

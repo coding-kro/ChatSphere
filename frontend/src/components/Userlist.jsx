@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { showToast } from '../utils/showToast';
 import { socket } from '../socket';
+import profilePic from '../assets/user.png';
 
 const Userlist = ({ setSelectedUser, setIsSidebarOpen }) => {
   const [users, setUsers] = useState([]);
@@ -61,12 +62,9 @@ const Userlist = ({ setSelectedUser, setIsSidebarOpen }) => {
               {/* Avatar */}
               <div className="relative shrink-0">
                 <img
-                  src={
-                    user?.profilePic ||
-                    `https://i.pravatar.cc/150?u=${user._id}`
-                  }
+                  src={user?.profilePic || profilePic}
                   className="w-12 h-12 rounded-xl object-cover"
-                  alt={user.fullName}
+                  alt={user?.fullName}
                   loading="lazy"
                 />
 
@@ -81,7 +79,7 @@ const Userlist = ({ setSelectedUser, setIsSidebarOpen }) => {
               {/* User Info */}
               <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-sm lg:text-base truncate">
-                  {user.fullName}
+                  {user?.fullName}
                 </h3>
               </div>
             </button>

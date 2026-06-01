@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import axios from 'axios';
 import { showToast } from '../utils/showToast';
+import profilePic from '../assets/user.png';
 
 const SearchResult = ({ query, setSelectedUser, setIsSidebarOpen }) => {
   const [users, setUsers] = useState([]);
@@ -82,14 +83,14 @@ const SearchResult = ({ query, setSelectedUser, setIsSidebarOpen }) => {
             className="w-full flex items-center gap-3 lg:gap-4 p-3 lg:p-4 rounded-2xl hover:bg-white/5 transition-all text-left"
           >
             <img
-              src={user.profilePic || `https://i.pravatar.cc/150?u=${user._id}`}
+              src={user?.profilePic || profilePic}
               className="w-12 h-12 rounded-xl object-cover"
-              alt={user.fullName}
+              alt={user?.fullName}
             />
 
             <div className="min-w-0">
-              <h3 className="font-semibold truncate">{user.fullName}</h3>
-              <p className="text-xs text-slate-400">{user.email}</p>
+              <h3 className="font-semibold truncate">{user?.fullName}</h3>
+              <p className="text-xs text-slate-400">{user?.email}</p>
             </div>
           </button>
         ))}
