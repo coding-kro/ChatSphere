@@ -32,11 +32,7 @@ const App = () => {
      * ON CONNECT
      */
     const handleConnect = () => {
-      console.log('Socket Connected:', socket.id);
-
       socket.emit('join', user._id);
-
-      console.log('JOIN SENT:', user._id);
     };
 
     socket.on('connect', handleConnect);

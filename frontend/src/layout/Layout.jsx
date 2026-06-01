@@ -17,6 +17,8 @@ import ImagePreview from '../components/ImagePreview';
 
 import { useAuth } from '../context/AuthContext';
 
+import { FourSquare } from 'react-loading-indicators';
+
 const Layout = () => {
   const { user, loading } = useAuth();
 
@@ -33,8 +35,13 @@ const Layout = () => {
 
   if (loading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-slate-950 text-white">
-        Loading...
+      <div className="min-h-screen flex items-center justify-center bg-slate-950">
+        <FourSquare
+          color="#a855f7"
+          size="large"
+          text="Loading.."
+          textColor="#ffffff"
+        />
       </div>
     );
   }
