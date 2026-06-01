@@ -14,7 +14,7 @@ const Profile = () => {
 
   const [onlineUsers, setOnlineUsers] = useState([]);
 
-  // 🟢 listen online users
+  // listen online users
   useEffect(() => {
     socket.on('online-users', (users) => {
       setOnlineUsers(users);
@@ -31,7 +31,7 @@ const Profile = () => {
         withCredentials: true,
       });
 
-      socket.disconnect(); // IMPORTANT
+      socket.disconnect(); 
       navigate('/login');
     } catch (err) {
       console.log(err);

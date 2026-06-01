@@ -10,7 +10,7 @@ const SearchResult = ({ query, setSelectedUser, setIsSidebarOpen }) => {
 
   const abortRef = useRef(null);
 
-  // ✅ FIX: memoized function
+  
   const fetchUsers = useCallback(
     async (searchText) => {
       try {

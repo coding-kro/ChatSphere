@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { socket } from '../socket'; // 👈 import your socket instance
+import { socket } from '../socket';
 
 export const AuthContext = createContext();
 
@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }) => {
   }, [apiUrl]);
 
   /**
-   * ✅ SOCKET JOIN (IMPORTANT PART)
+   * SOCKET JOIN
    */
   useEffect(() => {
     if (user?._id) {

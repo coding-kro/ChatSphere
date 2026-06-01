@@ -9,7 +9,7 @@ const Userlist = ({ setSelectedUser, setIsSidebarOpen }) => {
 
   const apiUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 
-  // 📥 FETCH USERS
+  // FETCH USERS
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -29,7 +29,7 @@ const Userlist = ({ setSelectedUser, setIsSidebarOpen }) => {
     fetchUsers();
   }, [apiUrl]);
 
-  // 🟢 SOCKET ONLINE USERS
+  // SOCKET ONLINE USERS
   useEffect(() => {
     socket.on('online-users', (users) => {
       setOnlineUsers(users);

@@ -73,7 +73,7 @@ const Layout = () => {
         {/* Tabs */}
         <Selectbutton activeTab={activeTab} setActiveTab={setActiveTab} />
 
-        {/* 🔥 SEARCH OVERRIDES EVERYTHING */}
+        {/* SEARCH OVERRIDES EVERYTHING */}
         {query ? (
           <SearchResult
             query={query}

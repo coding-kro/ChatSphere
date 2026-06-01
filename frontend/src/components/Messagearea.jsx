@@ -11,7 +11,7 @@ const Messagearea = ({ selectedUser, currentUserId, setPreviewImage }) => {
   const apiUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 
   /**
-   * 📥 FETCH CHAT HISTORY
+   * FETCH CHAT HISTORY
    */
   useEffect(() => {
     if (!selectedUser?._id) return;
@@ -38,7 +38,7 @@ const Messagearea = ({ selectedUser, currentUserId, setPreviewImage }) => {
   }, [selectedUser, apiUrl]);
 
   /**
-   * 📡 REALTIME MESSAGE LISTENER
+   * REALTIME MESSAGE LISTENER
    */
   useEffect(() => {
     if (!selectedUser?._id) return;
@@ -71,7 +71,7 @@ const Messagearea = ({ selectedUser, currentUserId, setPreviewImage }) => {
   }, [selectedUser]);
 
   /**
-   * 🔥 AUTO SCROLL
+   *  AUTO SCROLL
    */
   useEffect(() => {
     scrollRef.current?.scrollIntoView({

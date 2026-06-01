@@ -49,7 +49,6 @@ const ImagePreview = ({ image, onClose }) => {
           </button>
         </div>
 
-        {/* Preview Image (RESPONSIVE FIXED) */}
         <img
           src={image}
           alt="preview"

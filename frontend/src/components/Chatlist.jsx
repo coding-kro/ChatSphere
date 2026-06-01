@@ -9,7 +9,7 @@ const Chatlist = ({ setSelectedUser, setIsSidebarOpen }) => {
 
   const apiUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 
-  // 📡 FETCH USERS
+  // FETCH USERS
   useEffect(() => {
     const fetchUsers = async () => {
       try {
