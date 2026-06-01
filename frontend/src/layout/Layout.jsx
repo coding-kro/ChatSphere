@@ -39,7 +39,7 @@ const Layout = () => {
         <FourSquare
           color="#a855f7"
           size="large"
-          text="Loading.."
+          text="Loading..."
           textColor="#ffffff"
         />
       </div>
