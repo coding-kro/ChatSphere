@@ -15,15 +15,10 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: 'http://localhost:5173', // Adjust this to your frontend URL
-    credentials: true, // Allow cookies to be sent with requests
+    origin: 'http://localhost:5173', 
+    credentials: true, 
   }),
 );
-
-// Health check route
-app.get('/', (req, res) => {
-  res.status(200).send('API is running');
-});
 
 // Routes
 app.use('/api/auth', authRoute);

@@ -2,7 +2,6 @@ import { Router } from 'express';
 import {
   sendMessageController,
   getMessagesController,
-  markMessagesSeenController,
 } from '../controllers/message.controller.js';
 
 import { authMiddleware } from '../middleware/auth.middleware.js';
@@ -30,7 +29,3 @@ router.get(
   getMessagesController,
 );
 
-/**
- *  Mark messages as seen
- */
-router.put('/seen/:senderId', authMiddleware, markMessagesSeenController);

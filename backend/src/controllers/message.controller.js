@@ -82,11 +82,7 @@ export const sendMessageController = async (req, res) => {
       receiverId,
       message,
       image: imageUrl,
-      seen: false,
     });
-
-    console.log('Sender ID:', senderId.toString());
-    console.log('Receiver ID:', receiverId.toString());
 
     /**
      * ⚡ GET SOCKETS
@@ -95,20 +91,13 @@ export const sendMessageController = async (req, res) => {
 
     const senderSockets = onlineUsers.get(senderId.toString());
 
-    console.log('Receiver Sockets:', receiverSockets);
-    console.log('Sender Sockets:', senderSockets);
-
     /**
      * 📤 SEND TO RECEIVER
      */
     if (io && receiverSockets?.size > 0) {
       receiverSockets.forEach((socketId) => {
         io.to(socketId).emit('receive-message', newMessage);
-
-        console.log(`✅ Message sent to receiver socket: ${socketId}`);
       });
-    } else {
-      console.log('❌ Receiver not online');
     }
 
     /**
@@ -117,8 +106,6 @@ export const sendMessageController = async (req, res) => {
     if (io && senderSockets?.size > 0) {
       senderSockets.forEach((socketId) => {
         io.to(socketId).emit('receive-message', newMessage);
-
-        console.log(`✅ Message sent to sender socket: ${socketId}`);
       });
     }
 
@@ -151,11 +138,6 @@ export const getMessagesController = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 50;
 
-    const io = getIO();
-
-    /**
-     * ✅ VALIDATION
-     */
     if (!userId || !selectedUserId) {
       return res.status(400).json({
         success: false,
@@ -173,63 +155,22 @@ export const getMessagesController = async (req, res) => {
       });
     }
 
-    /**
-     * 📥 GET CHAT
-     */
     const messages = await messageModel
       .find({
         $or: [
-          {
-            senderId: userId,
-            receiverId: selectedUserId,
-          },
-          {
-            senderId: selectedUserId,
-            receiverId: userId,
-          },
+          { senderId: userId, receiverId: selectedUserId },
+          { senderId: selectedUserId, receiverId: userId },
         ],
       })
-      .sort({ createdAt: -1 })
+      .sort({ createdAt: 1 })
       .skip((page - 1) * limit)
       .limit(limit)
       .lean();
 
-    /**
-     * 👁️ MARK AS SEEN
-     */
-    await messageModel.updateMany(
-      {
-        senderId: selectedUserId,
-        receiverId: userId,
-        seen: false,
-      },
-      {
-        $set: {
-          seen: true,
-        },
-      },
-    );
-
-    /**
-     * ⚡ NOTIFY SENDER
-     */
-    const senderSockets = onlineUsers.get(selectedUserId.toString());
-
-    if (io && senderSockets?.size > 0) {
-      senderSockets.forEach((socketId) => {
-        io.to(socketId).emit('messages-seen', {
-          by: userId,
-        });
-      });
-    }
-
-    /**
-     * ✅ RESPONSE
-     */
     return res.status(200).json({
       success: true,
       count: messages.length,
-      data: messages.reverse(),
+      data: messages,
     });
   } catch (error) {
     console.error('Get Messages Error:', error);
@@ -237,72 +178,6 @@ export const getMessagesController = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Internal server error',
-    });
-  }
-};
-
-/**
- * 👁️ MARK MESSAGES AS SEEN
- */
-export const markMessagesSeenController = async (req, res) => {
-  try {
-    const userId = req.user?.userId;
-    const { senderId } = req.params;
-
-    const io = getIO();
-
-    /**
-     * ✅ VALIDATION
-     */
-    if (!userId || !senderId) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid request',
-      });
-    }
-
-    /**
-     * 👁️ UPDATE SEEN
-     */
-    await messageModel.updateMany(
-      {
-        senderId,
-        receiverId: userId,
-        seen: false,
-      },
-      {
-        $set: {
-          seen: true,
-        },
-      },
-    );
-
-    /**
-     * ⚡ SOCKET NOTIFY
-     */
-    const senderSockets = onlineUsers.get(senderId.toString());
-
-    if (io && senderSockets?.size > 0) {
-      senderSockets.forEach((socketId) => {
-        io.to(socketId).emit('messages-seen', {
-          by: userId,
-        });
-      });
-    }
-
-    /**
-     * ✅ RESPONSE
-     */
-    return res.status(200).json({
-      success: true,
-      message: 'Messages marked as seen',
-    });
-  } catch (error) {
-    console.error('Seen Error:', error);
-
-    return res.status(500).json({
-      success: false,
-      message: error.message,
     });
   }
 };

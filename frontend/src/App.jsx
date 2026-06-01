@@ -6,14 +6,13 @@ import Login from './pages/Login';
 import Layout from './layout/Layout';
 import UserProfile from './pages/UserProfile';
 import SeeProfile from './pages/SeeProfile';
-// import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
 
 import { ToastContainer } from 'react-toastify';
 
 import { socket } from './socket';
 import { useAuth } from './context/AuthContext';
-import ImagePreview from './components/ImagePreview';
+
 
 const App = () => {
   const { user, loading } = useAuth();
@@ -60,7 +59,6 @@ const App = () => {
       <ToastContainer />
 
       <Routes>
-        <Route path="/test" element={<ImagePreview />} />
         <Route index element={<Layout />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
