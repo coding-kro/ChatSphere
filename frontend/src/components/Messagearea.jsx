@@ -2,11 +2,9 @@ import axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
 import { showToast } from '../utils/showToast';
 import { socket } from '../socket';
-// import ImagePreview from '../components/ImagePreview';
 
 const Messagearea = ({ selectedUser, currentUserId, setPreviewImage }) => {
   const [messages, setMessages] = useState([]);
-  // const [previewImage, setPreviewImage] = useState(null);
 
   const scrollRef = useRef(null);
 
@@ -119,7 +117,11 @@ const Messagearea = ({ selectedUser, currentUserId, setPreviewImage }) => {
 
               {/* TIME */}
               {message.createdAt && (
-                <span className="text-[10px] text-slate-400 block mt-1 text-right">
+                <span
+                  className={`text-[10px] block mt-1 text-right ${
+                    isSender ? 'text-cyan-100' : 'text-gray-300'
+                  }`}
+                >
                   {new Date(message.createdAt).toLocaleTimeString('en-IN', {
                     hour: '2-digit',
                     minute: '2-digit',
@@ -131,8 +133,6 @@ const Messagearea = ({ selectedUser, currentUserId, setPreviewImage }) => {
           </div>
         );
       })}
-
-   
 
       <div ref={scrollRef} />
     </div>
