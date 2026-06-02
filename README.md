@@ -108,7 +108,7 @@ ChatSphere
 ### Clone Repository
 
 ```bash
-git clone YOUR_GITHUB_REPOSITORY_URL
+git clone [YOUR_GITHUB_REPOSITORY_URL](https://github.com/coding-kro/ChatSphere)
 ```
 
 ### Backend Setup
