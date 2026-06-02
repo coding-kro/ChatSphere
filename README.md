@@ -1,4 +1,4 @@
-<img width="1916" height="928" alt="maindashboard" src="https://github.com/user-attachments/assets/60d72fda-83cd-46ba-a696-cb66bb335d2e" /># 💬 ChatSphere
+# 💬 ChatSphere
 
 <div align="center">
 
@@ -87,28 +87,66 @@ ChatSphere
 │
 ├── frontend
 │   ├── src
+│   │   ├── assets
+│   │   ├── components
+│   │   ├── context
+│   │   ├── layout
+│   │   ├── pages
+│   │   └── utils
+│   │
 │   ├── public
 │   └── package.json
 │
 ├── backend
-│   ├── controllers
-│   ├── middleware
-│   ├── models
-│   ├── routes
-│   ├── socket
+│   ├── src
+│   │   ├── config
+│   │   ├── db
+│   │   ├── controllers
+│   │   ├── middleware
+│   │   ├── models
+│   │   ├── routes
+│   │   ├── socket
+│   │   └── utils
+│   │
 │   └── package.json
 │
 └── README.md
 ```
 
----
+### 🎨 Frontend Structure
+
+| Folder       | Description                                     |
+| ------------ | ----------------------------------------------- |
+| `assets`     | Images, icons, and static resources             |
+| `components` | Reusable UI components                          |
+| `context`    | Global state management using React Context API |
+| `layout`     | Shared layouts and page wrappers                |
+| `pages`      | Application pages/screens                       |
+| `utils`      | Helper functions and utilities                  |
+
+### ⚙️ Backend Structure
+
+| Folder        | Description                             |
+| ------------- | --------------------------------------- |
+| `config`      | Application configuration files         |
+| `db`          | MongoDB connection setup                |
+| `controllers` | Request handling and business logic     |
+| `middleware`  | Authentication and custom middleware    |
+| `models`      | MongoDB/Mongoose schemas                |
+| `routes`      | API route definitions                   |
+| `socket`      | Socket.io real-time communication logic |
+| `utils`       | Reusable helper functions               |
+
+```
+```
+
 
 ## 🚀 Installation
 
 ### Clone Repository
 
 ```bash
-git clone [YOUR_GITHUB_REPOSITORY_URL](https://github.com/coding-kro/ChatSphere)
+git clone https://github.com/coding-kro/ChatSphere
 ```
 
 ### Backend Setup
@@ -181,8 +219,7 @@ Online Status 🟢
 
 ### 📱 Mobile View
 
-<img width="812" height="1650" alt="iPhone-13-PRO-chat-sphere-theta-neon vercel app" src="https://github.com/user-attachments/assets/58826f02-14dc-4144-a9ae-04577665dd2e" />
-
+<img width="3614" height="1844" alt="iPhone-13-PRO-chat-sphere-theta-neon vercel app (1)" src="https://github.com/user-attachments/assets/851ec902-ab39-4154-a86c-0b3f7badbac2" />
 
 ---
 
