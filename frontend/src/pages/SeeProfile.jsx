@@ -11,7 +11,7 @@ const SeeProfile = () => {
   const navigate = useNavigate();
   const { anotherUserId } = useParams();
 
-  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+  const apiUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 
   useEffect(() => {
     const fetchUserData = async () => {
